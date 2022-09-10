@@ -1,0 +1,345 @@
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[Lenny]{fncychap}
+\usepackage[labelfont=bf]{caption}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{fancyheadings}
+\usepackage{geometry}
+\pagestyle{fancy}
+\lhead{\scriptsize \textbf{Practicas en R 2022}}
+\chead{{\textbf UNIVERSIDAD DE EL SALVADOR\par}
+      {\textbf FACULTAD MULDISCIPLINARIA DE OCCIDENTE\par}
+      {\textbf DEPARTAMENTO DE MATEM\'ATICAS\par}}
+\rhead{\includegraphics[width=2cm, height=2cm]{Ues_Logo.jpg}}
+\rfoot{}
+\setlength{\headheight}{60.50192pt}
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+\geometry{left=2.5cm, right=2.5cm, bottom=2.5cm, top=3.5cm}
+
+\begin{document}
+\begin{titlepage}
+\centering
+{\bfseries\LARGE UNIVERSIDAD DE EL SALVADOR \par}
+\vspace{0.5cm}
+{\bfseries\LARGE FACULTAD MULDISCIPLINARIA DE OCCIDENTE\par}
+\vspace{0.5cm}
+{\bfseries\LARGE DEPARTAMENTO DE MATEM\'ATICAS\par}
+\vspace{2cm}
+{\bfseries\LARGE LICENCIATURA EN ESTAD\'ISTICA\par}
+\vspace{2cm}
+{\includegraphics[width=0.22\textwidth]{Ues_Logo.jpg}\par}
+\vspace{1cm}
+{\bfseries\LARGE PRACTICAS REALIZADAS EN EL SOFTWARE R \par}
+\vspace{2cm}
+{\bfseries\LARGE DOCENTE: \par}
+{\bfseries\LARGE LICENCIADO. JAIME ISAAC PEÑA \par}
+\vspace{1cm}
+{\bfseries\LARGE PRESENTADO POR: \par}
+{\bfseries\LARGE MORIS SALVADOR HENRIQUEZ LIMA \par}
+\vfill
+{\bfseries\Large Viernes 09 de Septiembre del 2022  \par}
+\end{titlepage}
+\newpage
+
+\tableofcontents
+\newpage
+
+\SweaveOpts{concordance=TRUE}
+\begin{center}
+\section{TEOREMA DEL L\'IMITE CENTRAL}
+\end{center}
+Como hemos visto, R tiene algunas funciones para generar n\'umeros aleatorios. Para estos n\'umeros aleatorios, podemos ver la distribuci\'on usando histogramas y otras herramientas. Lo que queremos hacer ahora, es generar nuevos tipos de n\'umeros aleatorios e investigar qu\'e tipo de distribuci\'on tienen.\\
+\\
+El Teorema del L\'imite Central (TLC) informa acerca de la distribuci\'on de muestreo de medias de muestras con tamaño n . Recu\'erdese que b\'asicamente existen tres tipos de informaci\'on que se desea conocer sobre una distribuci\'on:\\
+\\
+1) d\'onde está el centro,\\
+\\
+2) qu\'e tanto var\'ia, y\\
+\\
+3) c\'omo est\'a repartida.\\
+\\
+El Teorema del L\'imite Central establece que s\'i las observaciones $X_1, X_2, X_3,..,X_n$ son variables aleatorias independientes e idénticamente distribuidas con una distribuci\'on de probabilidad cualquiera y en la cual cada una de ellas tenga la misma media $\mu$ y la misma varianza $\sigma^{2}$ (ambas finitas).\\
+\\
+Entonces el promedio muestral tiene una distribución con media $\mu$ y varianza $\sigma^2/n$ que tiende hacia una distribución $N(0, 1)$ a medida que n tiende a $\infty$.\\
+\\
+¿C\'omo podemos comprobar esto? La simulaci\'on es un excelente camino.\\
+\\
+\subsection{Procesos a Realizar y Ejemplos.}
+\subsubsection{Activa tu directorio de Trabajo}
+Proceso Realizado:
+<<>>=
+getwd()
+@
+Al realizar el comando anterior verificamos la direccion en la cual estamos trabajando, debido a que nos encontramos en nuestro escritorio de trabajo omitimos lo siguiente: setwd(C:/Curso R2022).
+\\
+\subsubsection{Crea un nuevo script y ll\'amele: Sript16-Simulación del TLC.}
+Para este proceso creamos un nuevo scrip en R-MarkDonw con el nombre de Practica16.
+
+\subsubsection{Simular el Teorema del L\'imite Central con datos binomial.}
+Consideremos $n$ repeticiones independientes y sea $X$ el n\'umero de veces que ocurre un suceso $A$. Sea p igual a $P(A)$ y supongamos que este n\'umero es constante para todas las repeticiones consideradas.
+\\
+El teorema central del límite nos indica que:\\
+\\
+$$\frac{X - E[X]}{\sqrt{V(X)}} = \frac{X-np}{\sqrt{npq}}$$, es aproximadamente $N(0, 1)$\\
+
+\subsubsection{EJEMPLOS.}
+\textbf{• Ejemplo 1:}\\
+\\
+Generar 100 n\'umeros aleatorios de una distribuci\'on binomial con par\'ametros n=10 (n\'umero de ensayos o pruebas), y p=0.25 (probabilidad de \'exito).\\
+\\
+Llevamos a cabo la solucion de la siguiente manera:\\
+\\
+Realizamos el Tamaño de la muestra, la definimos por: tm.
+<<>>=
+tm = 100
+tm
+
+n <- 10
+n
+
+p <- 0.25
+p
+@
+Ahora generamos los 100 numeros aleatorios:
+<<>>=
+S = rbinom(tm, n, p)
+S
+@
+Ahora realizamos el proceso de estandarizar cada una de las observaciones:
+<<>>=
+Z = (S-n*p)/sqrt(n*p*(1-p))
+Z 
+@
+La variable X tiene los resultados, y podemos ver la distribuci\'on de los n\'umeros aleatorios en X con un histograma.\\
+\\
+Histograma:
+<<fig=TRUE>>=
+hist(Z, main="Histograma de Z ~ N(0, 1)", xlab="z = número binomiales estándarizados",
+ylab="f(z)", prob=TRUE, col="khaki")
+
+curve(dnorm(x, 0, 1), col = "deepskyblue", lty=2, lwd=2, add=TRUE) 
+@
+\\La distribuci\'on muestra un gr\'afico aproximadamente normal. Esto es, en forma de campana, centrada en 0 y con desviaci\'on est\'andar 1.
+\subsubsection{Simular el TLC con datos de una distribuci\'on normal.}
+El teorema central del l\'imite establece que:\\
+$$\frac{\bar{x}-\mu}{\sigma/\sqrt{n}}\sim N(0, 1)$$\\
+\\
+\newpage
+\textbf{• Ejemplo 2:}\\
+\\
+Suponga que $X_i$ es normal con media $\mu = 5$ y desviación estándar $\sigma = 5$.\\
+\\
+Entonces necesitamos una función para encontrar el valor de:\,$\frac{\bar{x}-\mu}{\sigma/\sqrt{n}}$\\
+\\
+\textbf{Realizamos el Proceso de creaci\'on de la Funci\'on solicitada de la siguiente manera:}
+<<>>=
+simulNorm <- function(mu, sigma, m=5, n=100)
+ {
+ vectMedias <<- numeric(0)
+ MediasEstand <<- numeric(0)
+ for (i in 1:m)
+{
+ X = rnorm(n, mu, sigma)
+ # genera n valores normales
+ vectMedias[i] <<- mean(X)
+ MediasEstand[i] <<- (vectMedias[i] - mu)/(sigma/sqrt(n))
+ }
+}
+
+mu = 5
+mu
+
+sigma = 5
+sigma
+
+m <- 200
+m
+@
+\newpage
+\textbf{Utilizamos la Funci\'on Creada Para la Distribuci\'on Normal.}\\
+\\
+Numero de muestras o medias a obtener mediante la Funci\'on creada anteriormente:
+<<fig=TRUE>>=
+simulNorm(mu, sigma, m)
+
+hist(MediasEstand, main="Histograma de medias estándarizadas", xlab="Valores de m
+medias normales estándarizadas", prob=TRUE, col="darkolivegreen3")
+curve(dnorm(x, 0, 1), col = "deeppink3", lty=2, lwd=2, add=TRUE) 
+@
+\subsubsection{Grafico de Probabilidad Normal}
+Un mejor gr\'afico que el histograma para decidir si los datos aleatorios son aproximadamente normal es el llamado gr\'afico de probabilidad normal. La idea b\'asica es graficar los cuantiles de sus datos contra los correspondientes cuantiles de la distribuci\'o normal. Los cuantiles de un conjunto de datos preferidos son la Mediana, $Q_{1}$\thinspace y\thinspace $Q_{3}$ los m\'as generales. El cuantil q es el valor en los datos donde. Tambi\'en el cuantil 0.25 es $Q_{1}$, el cuantil 0.5 es la mediana y el cuantil 0.75 es $Q_{3}$.Los cuantiles para la distribuci\'on te\'orica son similares, s\'olo cambia el n\'umero de puntos datos menores, o sea el \'area a la izquierda del monto especificado. Por ejemplo, la mediana parte el \'area por debajo de la curva de densidad en la mitad.\\
+\\\\
+El gr\'afico de probabilidad normal es f\'acil de leer si conoce c\'omo. Esencialmente, si el gr\'afico parece una l\'inea recta entonces los datos son aproximadamente normal. Est\'a l\'inea no es una l\'inea de regresi\'on. La l\'inea es trazada a trav\'es de los puntos formados por el primer y tercer cuartil.\\
+\\
+Primer Proceso a realizar:
+<<fig=TRUE>>=
+qqnorm(MediasEstand, main="X ~ N(0, 1)")
+@
+\newpage
+Proceso de mostrar linea de normalidad:
+<<fig=TRUE>>=
+qqnorm(MediasEstand, main="X ~ N(0, 1)")
+
+qqline(MediasEstand, lty=1, lwd=2, col="red") 
+@
+\newpage
+\subsubsection{Simular el Teorema del Límite Central con datos exponencial.}
+Un ejemplo de una distribuci\'on sesgada es la exponencial. Necesitamos conocer que s\'i tiene media $\mu = 10$, entonces la desviaci\'on est\'andar $\sigma$ es tambi\'en 10, por eso s\'olo necesitamos especificar la media.\\
+\\
+Vamos a simular para varios valores de n.\\
+\\
+Para cada una de las m =100 muestras, n ser\'a, 5, 15, 50 (el n\'umero de valores aleatorios en cada uno de los promedios).\\
+\\
+\textbf{Realizamos el Proceso de creaci\'on de la Funci\'on solicitada:}\\
+<<>>=
+simulExp <- function(mu, m=5, n=100)
+{
+ razon <- 1/mu
+ vectMedias <<- numeric(0)
+ MediasEstand <<- numeric(0)
+ for (i in 1:m)
+{
+ X = rexp(n, razon)
+# genera n valores exponenciales
+ vectMedias[i] <<- mean(X)
+ MediasEstand[i] <<- (vectMedias[i] - mu)/(mu/sqrt(n))
+ }
+} 
+
+@
+\newpage
+\textbf{Llevamos a cabo la realizaci\'on de los siguientes ejemplos:}\\
+Para n=1
+<<fig=TRUE>>=
+ mu=10
+ m <- 100 
+ n <- 1
+ simulExp(mu, m, n)
+ hist(MediasEstand, main="Medias Exp(10); n=1", xlab="m medias exp estándarizadas",
+prob=TRUE, col="darkolivegreen3")
+ xvals = seq(from=-3, to=3, by=0.01)
+ points(xvals, dnorm(xvals, 0, 1), col = "red", type="l", lty=1, lwd=2)
+@
+\\
+\newpage
+Para n=5
+<<fig=TRUE>>=
+mu=10
+m <- 100  
+n <- 5
+ simulExp(mu, m, n)
+ hist(MediasEstand, main="Medias Exp(10); n=5", xlab="m medias exp estándarizadas",
+prob=TRUE, col="darkolivegreen3")
+ xvals = seq(from=-3, to=3, by=0.01)
+ points(xvals, dnorm(xvals, 0, 1), col = "red", type="l", lty=1, lwd=2) 
+ 
+@
+\\
+\newpage
+Repita este proceso para n=15 y n=50\\
+\\
+Para n=15
+<<fig=TRUE>>=
+ mu=10
+ m <- 100  
+ n <- 15
+ simulExp(mu, m, n)
+ hist(MediasEstand, main="Medias Exp(10); n=15", xlab="m medias exp estándarizadas",
+prob=TRUE, col="darkolivegreen3")
+ xvals = seq(from=-3, to=3, by=0.01)
+ points(xvals, dnorm(xvals, 0, 1), col = "red", type="l", lty=1, lwd=2) 
+@
+\\
+\newpage
+Para n=50
+<<fig=TRUE>>=
+ mu=10
+ m <-100
+ n <- 50
+ simulExp(mu, m, n)
+ hist(MediasEstand, main="Medias Exp(10); n=50", xlab="m medias exp estándarizadas",
+prob=TRUE, col="darkolivegreen3")
+ xvals = seq(from=-3, to=3, by=0.01)
+ points(xvals, dnorm(xvals, 0, 1), col = "red", type="l", lty=1, lwd=2)
+@
+\\
+Observe que el histograma tiene una forma muy acampanada entre n=15 y n=50, aunque justo en n=50 parece todavía ser un poco sesgada.\\
+\newpage
+\begin{center}\section{Ejercicio Propuesto sobre la Practica.}\end{center}
+\textbf{1. Simular el Teorema del L\'imite Central para una variable aleatoria que tiene distribuci\'on Poisson con lambda o media 4. Considerar 100 muestras aleatorias de tamaño 1, 10, 30, 50 valores de la distribuci\'on. Los gr\'aficos deben estar en una misma ventana.}\\
+\\
+\textbf{Soluci\'on:\\
+\\
+Realizamos el Proceso de creaci\'on de la Funci\'on solicitada de la siguiente manera:}
+\\
+<<>>=
+simulPois <- function(mu, m=5, n=100)
+ {
+ vectMedias <<- numeric(0)
+ MediasEstand <<- numeric(0)
+ for (i in 1:m)
+{
+ X = rpois(n,mu)
+ # genera n valores de la distribucion de Poisson:
+ vectMedias[i] <<- mean(X)
+ MediasEstand[i] <<- (vectMedias[i] - mu)/(mu/sqrt(n))
+ }
+}
+
+mu = 4
+mu
+
+m <- 100
+m
+@
+\textbf{Proceso de Simulac\'on mediante la Distribuc\'ion de Poisson para n = 1, 10, 30, 50}\\
+<<fig=TRUE>>=
+ par(mfrow = c(2,2))
+ # Para n = 1
+ mu= 4
+ m <-100
+ n <- 1
+ simulPois(mu, m, n)
+ hist(MediasEstand, main="Histograma Estandarizado ; n=1", xlab="m medias estándarizadas"
+ , prob=TRUE, col="darkolivegreen3")
+ xvals = seq(from=-3, to=3, by=0.01)
+ points(xvals, dnorm(xvals, 0, 1), col = "red", type="l", lty=1, lwd=2)
+ 
+ # Para n = 10
+ mu= 4
+ m <-100
+ n <- 10
+ simulPois(mu, m, n)
+ hist(MediasEstand, main="Histograma Estandarizad0 ; n=10", xlab="m medias
+ estándarizadas" , prob=TRUE, col="darkolivegreen3")
+ xvals = seq(from=-3, to=3, by=0.01)
+ points(xvals, dnorm(xvals, 0, 1), col = "red", type="l", lty=1, lwd=2)
+
+ # Para n = 30
+ mu= 4
+ m <-100
+ n <- 30
+ simulPois(mu, m, n)
+ hist(MediasEstand, main="Histograma Estandarizado ; n=30", xlab="m medias
+ estándarizadas", prob=TRUE, col="darkolivegreen3")
+ xvals = seq(from=-3, to=3, by=0.01)
+ points(xvals, dnorm(xvals, 0, 1), col = "red", type="l", lty=1, lwd=2)
+
+ # Para n = 50
+ mu= 4
+ m <-100
+ n <- 50
+ simulPois(mu, m, n)
+ hist(MediasEstand, main="Histograma Estandarizado ; n=50", xlab="m medias
+ estándarizadas", prob=TRUE, col="darkolivegreen3")
+ xvals = seq(from=-3, to=3, by=0.01)
+ points(xvals, dnorm(xvals, 0, 1), col = "red", type="l", lty=1, lwd=2)
+
+@
+
+\end{document}
