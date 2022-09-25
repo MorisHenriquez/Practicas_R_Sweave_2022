@@ -42,7 +42,7 @@
 {\bfseries\LARGE PRESENTADO POR: \par}
 {\bfseries\LARGE MORIS SALVADOR HENRIQUEZ LIMA \par}
 \vfill
-{\bfseries\Large Viernes 09 de Septiembre del 2022  \par}
+{\bfseries\Large Viernes 23 de Septiembre del 2022  \par}
 \end{titlepage}
 \newpage
 
@@ -226,9 +226,10 @@ $$\includegraphics[width=0.5\textwidth]{Imagen2_Practica18.jpg}$$
 \\
 El contraste de hipótesis que debemos resolver es el siguiente:\\
 \\
-$H_0\,\equiv\,\mu_a\,=\,\mu_d\\
-H_1\,\equiv\,\mu_a\,\neq\,\mu_d$\\
-\\
+\begin{center}
+$H_0\,\equiv\,\mu_a\,=\,\mu_d$\\
+$H_1\,\equiv\,\mu_a\,\neq\,\mu_d$
+\end{center}
 Donde $\mu_a$ y $\mu_d$ hacen referencia al peso medio poblacional antes y después de pasar por el programa de control de peso, respectivamente.\\
 \\
 Como puede observarse, los datos vienen por parejas: peso antes y después, dos datos por individuo. Parece lógico que los datos se encuentren relacionados entre sí.\\
@@ -251,8 +252,10 @@ Según los datos que se incluyen en la salida de la función, el estadístico de
 Retomando el conjunto de datos relativo a las flexiones que realizan un grupo de estudiantes, contrastar, a un nivel de significación del 8\% si la proporción de alumnos y de alumnas que practican deporte pueden considerarse iguales.\\
 \\
 El contraste que vamos a resolver es:\\
-$H_0\,\equiv\,\pi_H\,-\,\pi_M\,=\,0\\
-H_1\,\equiv\,\pi_H\,-\,\pi_M\,\neq\,0$\\
+\begin{center}
+$H_0\,\equiv\,\pi_H\,-\,\pi_M\,=\,0$\\
+$H_1\,\equiv\,\pi_H\,-\,\pi_M\,\neq\,0$
+\end{center}
 Donde $\pi_H$ y $\pi_M$ representan la proporciones de chicos y chicas que practican deporte, respectivamente.\\
 \\
 $$\textbf{Soluci\'on del Supuesto Pr\'actico 7}$$
@@ -370,7 +373,7 @@ tabla_conting
 El contraste de hipótesis que se debe resolver es:
 \begin{center}
 $H_0\,\equiv\,$El exito en la escuela y el sobrepeso son independientes\\
-$H_0\,\equiv\,$El exito en la escuela y el sobrepeso no son independientes
+$H_1\,\equiv\,$El exito en la escuela y el sobrepeso no son independientes
 \end{center}
 \newpage
 Vamos a resolver el contraste usando la función \textbf{chisq.test} (sin aplicar la corrección por continuidad).
@@ -778,7 +781,7 @@ Para realizar un contraste de diferencia de medias de dos poblaciones independie
 A continuación vamos a realizar el contraste de diferencia de medias:\\
 \begin{center}
 $H_0:\,\mu_X\,=\,\mu_Y$\\
-$H_0:\,\mu_X\,\neq\,\mu_Y$
+$H_1:\,\mu_X\,\neq\,\mu_Y$
 \end{center}
 Proceso para llevar a cabo la Soluci\'on:
 <<>>=
@@ -942,9 +945,32 @@ asimetria
 reg_lin <- lm(asimetria ~ longitud)
 reg_lin 
 @
-Podemos obtener más información sobre el modelo de regresión que hemos calculado aplicando la función su mmary al objeto que contiene los datos de la regresión, al cual hemos llamado reg-lin en este ejemplo.
+Por defecto, la salida que muestra la función lm incluye únicamente las estimaciones para los parámetros, en nuestro caso $\widehat{\beta_0}\,y\,\widehat{\beta_1}$\,. Por tanto, el modelo lineal puede escribirse del siguiente modo:\\
+\\
+$$\textbf{asimetría = 0.119847 -  0.000875  * longitud}$$\\
+Podemos obtener más información sobre el modelo de regresión que hemos calculado aplicando la función \textbf{summary} al objeto que contiene los datos de la regresión, al cual hemos llamado reg-lin en este ejemplo.
 <<>>=
 summary(reg_lin)
 @
-Esta salida contiene una información más completa sobre el análisis. Así, por ejemplo, encontramos información sobre los residuos (en el apartado Residuals), que se definen como la diferencia entre el verdadero valor de la variable dependiente y el valor que pronostica el modelo de regresión. Cuanto más pequeños sean estos residuos mejor será el ajuste del modelo a los datos y más acertadas serán las predicciones que se realicen a partir de dicho modelo. 
+Esta salida contiene una información más completa sobre el análisis. Así, por ejemplo, encontramos información sobre los \textbf{residuos} (en el apartado Residuals), que se definen como la diferencia entre el verdadero valor de la variable dependiente y el valor que pronostica el modelo de regresión. Cuanto más pequeños sean estos residuos mejor será el ajuste del modelo a los datos y más acertadas serán las predicciones que se realicen a partir de dicho modelo.\\
+\\
+En la tabla \textbf{Coefficients} encontramos los valores de los parámetros que aparecían en la salida por defecto junto a su error estándar. Cada parámetro aparece acompañado del valor de un estadístico t de Student y un p-valor que sirven para contrastar la \textbf{significación del parámetro} en cuestión, es decir, para resolver los siguientes contrastes de hipótesis:\\
+\begin{center}
+$H_0:\,\beta_0\,=\,0$\, vs\, $H1:\,\beta_0\,\neq\,0$\\
+$H_0:\,\beta_1\,=\,0$\, vs\, $H1:\,\beta_1\,\neq\,0$
+\end{center}
+Lo que se pretende mediante estos contrastes es determinar si los efectos de la constante y de la variable independiente son realmente importantes para de explicar la variable dependiente o si, por el contario, pueden considerarse nulos.
+\newpage
+En nuestro ejemplo, los p-valores que nos ayudan a resolver estos contrastes son 0.514 y 0.887, ambos mayores que 0.05. Así, considerando un nivel del significación del 5\%, no rechazamos  la  hipótesis  nula  en  ambos  contrastes,  de  manera  que  podemos  suponer ambos parámetros no son significativamente distintos de 0. Por lo tanto que concluimos que longitud no es  válida para predecir la asimetría según un modelo lineal.\\
+\\
+Por último, en la parte final de la salida, encontramos el valor de $R^2$ (Multiple R-squared) y de $R^2$ ajustado (Adjusted R-squared), que son indicadores de la bondad del ajuste de nuestro modelo a los datos. $R^2$ oscila entre 0 y 1, de manera que, valores de $R^2$ próximos a 1 indican un buen ajuste del modelo lineal a los datos. Por otro lado, $R^2$ ajustado es similar a $R^2$, pero penaliza la introducción en el modelo de variables independientes poco relevantes a la hora de explicar la variable dependiente. Por tanto, $R^2$ ajustado $\leq$  $R^2$. En nuestro ejemplo, $R^2$ = 0.001609 y $R^2$ ajustado = -0.07519, por lo que podemos concluir que el  modelo  lineal  no  se  ajusta  a  nuestros  datos.\\
+\\
+El  porcentaje de  variación  de  la asimetría de las hojas de la encina explicado por el modelo de regresión lineal es igual al 0.1 \%, siendo ésta una cantidad claramente insatisfactoria.\\
+\\
+La  última  línea  de  la  salida  incluye  un  estadístico  F  de  Snedecor  y  el  p-valor correspondiente que se utilizan para resolver el siguiente contraste:\\
+\begin{center}
+$H_0:\,\beta_i\,=\,0\,\,\,\,\,\,\forall_i$\\
+$H_1:\,\beta_i\,\neq\,0\,\, para al menos un i$ 
+\end{center}
+que  se  conoce  habitualmente  como  \textbf{contraste  ómnibus}.  Mediante  este  contraste  se comprueba si, de forma global, el modelo lineal es apropiado para modelizar los datos. En nuestro ejemplo, el p-valor asociado a este contraste 0.8871 es mayor que 0.05 por lo que,  al  5\%  de  significación  no  podemos  rechazar  la  hipótesis  nula  y  afirmar  que, efectivamente, el modelo lineal no es adecuado para nuestro conjunto de datos. 
 \end{document}
