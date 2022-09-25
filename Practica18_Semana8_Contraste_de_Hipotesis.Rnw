@@ -1,0 +1,950 @@
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[Lenny]{fncychap}
+\usepackage[labelfont=bf]{caption}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{fancyheadings}
+\usepackage{geometry}
+\pagestyle{fancy}
+\lhead{\scriptsize \textbf{Practicas en R 2022}}
+\chead{{\textbf UNIVERSIDAD DE EL SALVADOR\par}
+      {\textbf FACULTAD MULDISCIPLINARIA DE OCCIDENTE\par}
+      {\textbf DEPARTAMENTO DE MATEM\'ATICAS\par}}
+\rhead{\includegraphics[width=2cm, height=2cm]{Ues_Logo.jpg}}
+\rfoot{}
+\setlength{\headheight}{60.50192pt}
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+\geometry{left=2.5cm, right=2.5cm, bottom=2.5cm, top=3.5cm}
+
+\begin{document}
+\begin{titlepage}
+\centering
+{\bfseries\LARGE UNIVERSIDAD DE EL SALVADOR \par}
+\vspace{0.5cm}
+{\bfseries\LARGE FACULTAD MULDISCIPLINARIA DE OCCIDENTE\par}
+\vspace{0.5cm}
+{\bfseries\LARGE DEPARTAMENTO DE MATEM\'ATICAS\par}
+\vspace{2cm}
+{\bfseries\LARGE LICENCIATURA EN ESTAD\'ISTICA\par}
+\vspace{2cm}
+{\includegraphics[width=0.22\textwidth]{Ues_Logo.jpg}\par}
+\vspace{1cm}
+{\bfseries\LARGE PRACTICAS REALIZADAS EN EL SOFTWARE R \par}
+\vspace{2cm}
+{\bfseries\LARGE DOCENTE: \par}
+{\bfseries\LARGE LICENCIADO. JAIME ISAAC PEÑA \par}
+\vspace{1cm}
+{\bfseries\LARGE PRESENTADO POR: \par}
+{\bfseries\LARGE MORIS SALVADOR HENRIQUEZ LIMA \par}
+\vfill
+{\bfseries\Large Viernes 09 de Septiembre del 2022  \par}
+\end{titlepage}
+\newpage
+
+\tableofcontents
+\newpage
+
+\SweaveOpts{concordance=TRUE}
+\begin{center}
+\section{CONTRASTES DE HIP\'OTESIS}
+\end{center}
+\subsection{Supuesto Práctico 1}
+Con el fin de estudiar el número medio de flexiones continuadas que pueden realizar sus alumnos, un profesor de educación física somete a 75 de ellos, elegidos aleatoriamente, a una prueba. El número de flexiones realizado por cada alumno, así como su sexo y si realizan o no deporte fuera del horario escolar se muestran en el fichero \textbf{Flexiones.txt}.\\
+\\
+$$\includegraphics[width=0.5\textwidth]{Imagen1_Practica18.jpg}$$\\
+Se sabe que el número de flexiones se distribuye según una Normal de varianza poblacional 7.5.\\
+¿Puede asumirse, considerando un nivel de significación del 5\%, que el número medio de flexiones que realizan los alumnos es de 55?\\
+\\
+El contraste de hipótesis asociado a este ejercicio es:\\
+$$H_0\,\equiv\,\mu\,=\,55$$
+$$H_1\,\equiv\,\mu\,\neq\,55$$
+\\
+$$\textbf{Soluci\'on del Supuesto Práctico 1}$$
+En primer lugar debemos importar en \textbf{R} los datos que contienen el número de flexiones realizadas por cada alumno. Para ello, utilizamos la orden \textbf{read.table}.\\
+El siguiente Proceso setwd() se omite debido a que el archivo en el cual se trabajara ya esta en nuestro directorio de trabajo:\\
+\\
+Proceso de Lectura de la Base de Datos a utilizar:
+<<>>=
+datos<- read.table("Flexiones.txt" , header = TRUE)
+datos
+@
+Una vez hecho esto, introducimos en \textbf{R} el nivel de significación que proporciona el enunciado.
+<<>>=
+alpha <- 0.05
+alpha
+@
+A continuación, calculamos el valor del estadístico de contraste:
+<<>>=
+alpha <- 0.05
+alpha
+
+media <- mean(datos$Flexiones)
+media
+
+mu_0 <- 55
+mu_0
+
+varianza <- 7.5
+varianza
+
+n <- nrow(datos)
+n
+
+Z <- (media - mu_0)/(sqrt(varianza)/sqrt(n))
+Z
+@
+Y también el valor crítico, que en este caso coincide con $z_{1 - \frac{\alpha}{2}}$, el cuantil $\Huge{1 - \frac{\alpha}{2}}$  de una distribución normal de media 0 y varianza 1.
+<<>>=
+cuantil<- qnorm(1 - alpha/2)
+cuantil
+@
+Como el valor absoluto del estadístico de contraste \textbf{(15.47408)} es mayor que el valor crítico \textbf{(1.959964)}, en este caso se rechaza la hipótesis nula en favor de la hipótesis alternativa. Es decir, no puede asumirse que el número medio de flexiones que realizan los alumnos es de 55.\\
+\subsection{Supuesto Práctico 2}
+Considerando nuevamente el conjunto de datos que se ha presentado en el Supuesto práctico1, relativo al número de flexiones y el sexo de los alumnos. Contrastar a un nivel de significación del 2\% la hipótesis de que el número medio de flexiones realizada por los alumnos es de 50. Suponer en este caso que el número de flexiones se distribuye según una normal de varianza desconocida. El fichero es \textbf{Flexiones.txt}.\\
+\\
+$$\includegraphics[width=0.5\textwidth]{Imagen1_Practica18.jpg}$$\\
+\newpage
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 2}$$
+En primer lugar, planteamos el contraste de hipótesis asociado a este supuesto:\\
+$$H_0\,\equiv\,\mu\,=\,50$$
+$$H_1\,\equiv\,\mu\,\neq\,50$$\\
+Partiendo del conjunto de datos del supuesto 1, el cual se había importado y almacenado en una variable de nombre \textbf{datos}.\\
+En primer lugar, como hicimos anteriormente, debemos importar en {R} los datos que contienen el número de flexiones realizadas por cada alumno. Para ello, utilizamos la orden \textbf{read.table}.
+<<>>=
+getwd()
+datos<- read.table("Flexiones.txt", header = TRUE)
+head(datos)
+@
+Una vez importado los datos, vamos a resolver este contraste. Para ello, basta con realizar la siguiente llamada a la función \textbf{t.test}:
+<<>>=
+t.test(datos$Flexiones, alternative = "two.sided", mu = 50, conf.level = 0.98)
+@
+Entre la información que devuelve la función \textbf{t.test}, encontramos la relativa al intervalo de confianza, que se estudió en la práctica 5. En esta práctica nos centraremos en la referente al contraste de hipótesis.\\
+\\
+\textbf{t = 0.15451, df = 74, p-value = 0.8776}\\
+\textbf{alternative hypothesis: true mean isnotequal to 50}\\
+\\
+En primer lugar, aparece el valor del estadístico de contraste \textbf{(0.15451)} junto a los grados de libertad de la distribución \textbf{t de Student (74)} que sigue dicho estadístico de contraste. A continuación, encontramos el p-valor, que en este caso es \textbf{0.8776}. Por último, el programa nos recuerda que la hipótesis alternativa que se está contrastando es del tipo $\neq$.\\
+\\
+Teniendo en cuenta que el p-valor \textbf{(0.8776)} es superior al nivel de significación \textbf{(0.02)} en este ejemplo no podemos rechazar la hipótesis nula, por lo que podemos asumir que el número medio de flexiones que realizan los alumnos es de 50.\\
+\subsection{Supuesto Práctico 3}
+Considerando nuevamente el conjunto de datos que se ha presentado en el Supuesto práctico1, relativo al número de flexiones y el sexo de los alumnos. Contrastar a un nivel de confianza del 95\%, si la proporción de alumnos varones es mayor o igual que 0.5 frente a que dicha proporción es menor. El fichero es Flexiones.txt.\\
+\\
+El contraste que debemos resolver es:\\
+\\
+$$H_0\,\equiv\,\pi_H\,\geq\,50$$
+$$H_1\,\equiv\,\pi_H\,<\,50$$\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 3}$$
+Para realizar la llamada a la función \textbf{prop.test} necesitamos conocer el número de alumnos varones y el número total de estudiantes en la muestra. Para ello utilizamos la función de \textbf{R table}.\\
+\\
+En primer lugar, omo hicimos anteriormente, debemos importar en \textbf{R} los datos que contienen el número de flexiones realizadas por cada alumno. Para ello, utilizamos la orden \textbf{read.table}.
+<<>>=
+getwd()
+datos<- read.table("Flexiones.txt", header = TRUE)
+head(datos)
+@
+Una vez importado los datos,  utilizamos la función de R table como hemos dicho anteriormente:
+<<>>=
+table(datos$Sexo)
+@
+De los 75 estudiantes que conforman la muestra, 43 son chicos. Por lo que la llamada a \textbf{prop.test} sería la siguiente:
+<<>>=
+prop.test(43, 75, p = 0.5, alternative = "less", conf.level = 0.95)
+@
+De nuevo, los resultados de la función incluyen información sobre el intervalo de confianza y sobre el contraste de hipótesis. Nos centraremos en esta última.\\
+\\
+\textbf{X-squared = 1.3333, df = 1, p-value = 0.8759}\\
+\textbf{alternativehypothesis: true p islessthan 0.5}\\
+\\
+El valor del estadístico de contraste es \textbf{1.3333}, con un p-valor de \textbf{0.8759}. Como el p-valor es mayor que el nivel de significación, que es 0.05, no rechazamos la hipótesis de que la proporción de alumnos es mayor o igual que 0.5.\\
+\subsection{Supuesto Práctico 4}
+Continuando con los datos relativos a las flexiones realizadas por un grupo de estudiantes y asumiendo que las flexiones que realizan los chicos y las que realizan las chicas se distribuyen según sendas distribuciones normales con medias y varianzas desconocidas, contrastar a un nivel de significación del 5\% si las varianzas poblacionales de ambas distribuciones pueden asumirse iguales.\\
+\\
+El contraste de hipótesis que debemos resolver es:\\
+$$H_0\,\equiv\,\sigma_H^2\,=\,\sigma_H^2$$
+$$H_1\,\equiv\,\sigma_H^2\,\neq\,\sigma_H^2$$\\
+\\
+Donde $\sigma_H^2$ representa la varianza del número de flexiones realizadas por los chicos $\sigma_M^2$ y representa la varianza del número de flexiones realizadas por las chicas.\\
+\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 4}$$
+Lo primero que tenemos que hacer para aplicar la función \textbf{var.test} es separar en dos variables los datos relativos a las flexiones realizadas por los chicos y por las chicas.
+<<>>=
+Flexiones.chicos<- datos$Flexiones[datos$Sexo == "H"]
+Flexiones.chicos
+
+Flexiones.chicas<- datos$Flexiones[datos$Sexo == "M"]
+Flexiones.chicas
+@
+A continuación, utilizamos la función \textbf{var.test}.
+<<>>=
+var.test(Flexiones.chicos, Flexiones.chicas, alternative = "two.sided", conf.level = 0.95
+)
+@
+Analizando la información relativa al contraste de hipótesis que se incluye en la salida de \textbf{var.test}, vemos que el valor del estadístico de contraste es \textbf{0.87506}. La distribución F de Snedecor que sigue el estadístico de contraste tiene 42 grados de libertad en el numerador y 31 en el denominador. El p-valor asociado al contraste es \textbf{0.679}. Como este valor es superior al nivel de significación \textbf{(que para este ejemplo es 0.05)}, no podemos rechazar la hipótesis nula que hemos planteado.\\
+\\
+Es decir, se puede considerar que la varianza del número de flexiones realizadas por chicos y la varianza del número de flexiones realizadas por chicas son iguales.\\
+\subsection{Supuesto Práctico 5}
+En vista de los resultados obtenidos en el Supuesto Práctico 4, y suponiendo que el número de flexiones que realizan los alumnos y las alumnas se distribuyen de acuerdo a variables normales de medias y varianzas desconocidas, ¿puede suponerse, a un nivel de significación del 5\%, que el número medio de flexiones que realizan los chicos y las chicas es igual?\\
+\\
+El contraste que debemos resolver en esta ocasión es:\\
+$$H_0\,\equiv\,\mu_H\,=\,\mu_M\,\,\, \,\,\,\,\,\,H_0\,\equiv\,\mu_H\,-\,\mu_M\,=\,0$$
+$$H_1\,\equiv\,\mu_H\,\neq\,\mu_M\,\,\,\,\,\,\,\,\,H_1\,\equiv\,\mu_H\,-\,\mu_M\,\neq\,0$$\\
+En ambos casos $\mu_H$,  representa la media poblacional del número de flexiones realizadas por chicos y $\mu_M$ es la media poblacional del número de flexiones realizadas por las chicas.\\
+\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 5}$$
+Dado que en el Supuesto práctico 4 se concluyó la igualdad de las varianzas del número de flexiones que hacen chicos y chicas, debemos establecer a \textbf{TRUE} el valor del parámetro \textbf{var.equal} cuando realicemos la llamada a la función \textbf{t.test}.
+<<>>=
+datos<- read.table("Flexiones.txt", header = TRUE)
+head(datos)
+
+Flexiones.chicos<- datos$Flexiones[datos$Sexo == "H"]
+Flexiones.chicos
+
+Flexiones.chicas<- datos$Flexiones[datos$Sexo == "M"]
+Flexiones.chicas
+
+t.test(Flexiones.chicos, Flexiones.chicas, alternative = "two.sided", mu = 0, var.equal =
+TRUE)
+@
+Entre la información sobre el contraste de hipótesis que se incluye entre los resultados:\\
+\\
+\textbf{data:  Flexiones.chicos and Flexiones.chicas}\\
+\textbf{t = -0.06154, df = 73, p-value = 0.9511}\\
+\textbf{alternativehypothesis: true difference in meansisnotequal to 0}\\
+\\
+Se incluye el valor del estadístico de contraste \textbf{(-0.06154)}, los grados de libertad de la distribución t de Student que sigue el estadístico de contraste \textbf{(73)} y el \textbf{p-valor (0.9511)}. Como el p-valor es mayor que el nivel de significación fijado \textbf{(0.05)}, no rechazamos la hipótesis nula del contraste.\\
+\subsection{Supuesto Práctico 6}
+Para estudiar los efectos de un programa de control de peso, el profesor de educación física selecciona aleatoriamente a 6 alumnos y se les toma nota de sus pesos antes y después de pasar por el programa.\\
+\\
+$$\includegraphics[width=0.5\textwidth]{Imagen2_Practica18.jpg}$$
+¿Puede suponerse, a un nivel de significación del 5\%, que el programa para el control de peso es efectivo? O, dicho de otra forma, ¿el peso medio de los alumnos antes de someterse al programa es igual al peso medio tras el programa?\\
+\\
+El contraste de hipótesis que debemos resolver es el siguiente:\\
+\\
+$H_0\,\equiv\,\mu_a\,=\,\mu_d\\
+H_1\,\equiv\,\mu_a\,\neq\,\mu_d$\\
+\\
+Donde $\mu_a$ y $\mu_d$ hacen referencia al peso medio poblacional antes y después de pasar por el programa de control de peso, respectivamente.\\
+\\
+Como puede observarse, los datos vienen por parejas: peso antes y después, dos datos por individuo. Parece lógico que los datos se encuentren relacionados entre sí.\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 6}$$
+En primer lugar, vamos a introducir los datos en \textbf{R}.
+<<>>=
+Antes <- c(72.0, 73.5, 70.0, 71.5, 76.0, 80.5)
+Antes
+
+Despues<- c(73.0, 74.5, 74.0, 74.5, 75.0, 82.0)
+Despues
+@
+A partir de estos datos, vamos a aplicar la función \textbf{t.test}, para resolver el contraste de hipótesis que hemos planteado.
+<<>>=
+t.test(Antes, Despues, alternative = "two.sided", mu = 0, paired = TRUE)
+@
+Según los datos que se incluyen en la salida de la función, el estadístico de contraste toma un valor de \textbf{-2.2238} y sigue una distribución t de Student con 5 grados de libertad. El p-valor asociado al contraste es \textbf{0.07676}. Como este \textbf{p-valor} es mayor que \textbf{0.05}, que es el nivel de significación del contraste, podemos afirmar que la diferencia entre los pesos medios de los alumnos antes y después de seguir el programa de control de peso es nula o, equivalentemente, que ambos pesos medios pueden suponerse iguales.
+\newpage
+\subsection{Supuesto Práctico 7}
+Retomando el conjunto de datos relativo a las flexiones que realizan un grupo de estudiantes, contrastar, a un nivel de significación del 8\% si la proporción de alumnos y de alumnas que practican deporte pueden considerarse iguales.\\
+\\
+El contraste que vamos a resolver es:\\
+$H_0\,\equiv\,\pi_H\,-\,\pi_M\,=\,0\\
+H_1\,\equiv\,\pi_H\,-\,\pi_M\,\neq\,0$\\
+Donde $\pi_H$ y $\pi_M$ representan la proporciones de chicos y chicas que practican deporte, respectivamente.\\
+\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 7}$$
+En primer lugar, utilicemos el comando table para determinar cuántos chicos y cuantas chicas practican deporte.
+<<>>=
+table(datos$Sexo, datos$Deporte)  
+@
+En total, 11 de los 43 y 19 de las 32 chicas muestreados practican deporte fuera del horario escolar. Vamos a crear dos vectores con esta información: en uno indicaremos el total de chicos y chicas que practican deporte y en el otro el total de chicos y chicas en la muestra.
+<<>>=
+vector_Deporte<- c(11, 19)
+vector_Deporte
+
+vector_Sexo<- c(43, 32)
+vector_Sexo
+@
+Es muy importante que los valores se introduzcan en el mismo orden en los dos vectores. Ahora ya podemos utilizar la función prop.test utilizando estos dos vectores como argumentos.
+<<>>=
+prop.test(vector_Deporte, vector_Sexo, alternative = "two.sided", conf.level = 0.92)
+@
+Según la salida de la función \textbf{prop.test}, el \textbf{p-valor} asociado al contraste es \textbf{0.0066}, que al ser menor que el nivel de significación \textbf{(0.08)}, nos lleva a concluir que las proporciones de chicos y chicas que hacen deporte no coinciden.
+\newpage
+\subsection{Supuesto Práctico 8}
+La directora de un hospital quiere comprobar si los ingresos en el hospital se producen en la misma proporción durante todos los días de la semana. Para ello, se anota el número de ingresos durante una semana cualquiera. Los datos se recogen en la siguiente tabla:\\
+\\
+$$\includegraphics[width=0.5\textwidth]{Imagen3_Practica18.jpg}$$\\
+Contrastar, a un nivel de significación del 5\%, si la hipótesis de la directora del hospital puede suponerse cierta. ¿Puede asumirse que las proporciones de ingresos de lunes a domingo son (0.15, 0.15, 0.15, 0.15, 0.20, 0.15, 0.05)?\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 8}$$
+En primer lugar vamos a introducir los datos en R.
+<<>>=
+frecuencias <- c(78, 90, 94, 89, 110, 84, 44)
+frecuencias
+@
+El contraste que se debe resolver es:
+\begin{center}
+$H_0\equiv$ Los ingresos en el hospital se producen en la misma proporción todos los días de la semana\\
+$H_1\equiv$ Los ingresos en el hospital no se producen en la misma proporción todos los días de la semana
+\end{center}
+Para resolver este contraste se usa la función \textbf{chisq.test}.
+<<>>=
+chisq.test(frecuencias)
+@
+El estadístico de contraste, que sigue una distribución chi-cuadrado, toma el valor \textbf{29.389}. Los grados de libertad de la distribución chi-cuadrado para este ejemplo son 6. El p-valor asociado al contraste es menor que 0.05 por lo que, considerando un nivel de significación del 5\%, se rechaza la hipótesis nula. Es decir, se concluye que los ingresos hospitalarios no se producen en la misma proporción todos los días de la semana.\\
+\\
+Para comprobar si el vector \textbf{(0.15, 0.15, 0.15, 0.15, 0.20, 0.15, 0.05)} puede considerarse como el vector de proporciones de ingresos hospitalarios durante los 7 días de la semana, creamos un vector en R que recoja estos valores:
+<<>>=
+proporciones <- c(0.15, 0.15, 0.15, 0.15, 0.20, 0.15, 0.05)
+proporciones
+@
+Volvemos a llamar a la función \textbf{chisq.test} incluyendo como argumento el vector que acabamos de definir.
+<<>>=
+chisq.test(frecuencias, p = proporciones)
+@
+En este caso, el valor del estadístico de contraste es \textbf{9.5286}. El p-valor asociado es \textbf{0.146} que, al ser superior a 0.05, nos indica que no se puede rechazar la hipótesis nula. Esto equivale a decir que, a un nivel de significación del 5\%, puede suponerse que los ingresos hospitalarios se producen según los valores que se recogen en el vector proporciones.\\
+\subsection{Supuesto Práctico 9}
+Lanzamos un dado 720 veces y obtenemos los resultados que se muestran en la tabla.\\
+\\
+$$\includegraphics[width=0.5\textwidth]{Imagen4_Practica18.jpg}$$\\
+Contrastar la hipótesis de que el dado está bien construido.
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 9}$$
+Comencemos introduciendo en R las frecuencias con las que aparecen los valores del dado.
+<<>>=
+frecuencias <- c(116, 120, 115, 120, 125, 124)
+frecuencias
+@
+Que el dado esté bien construido equivale a decir que todos sus valores aparecen en la misma proporción. Por tanto, el contraste de hipótesis que se debe resolver es el siguiente:\\
+\\
+\begin{center}
+$H_0\equiv$\,Los valores del dado aparecen en la misma proporción\\
+$H_1\equiv$\,Los valores del dado no aparecen en la misma proporción
+\end{center}
+Para resolver este contraste de hipótesis se utiliza la función chisq.test, que recibe como argumento el vector de frecuencias:
+<<>>=
+chisq.test(frecuencias)
+@
+El valor del estadístico de contraste es \textbf{0.68333} y el p-valor asociado es igual a \textbf{0.984}. Como este p-valor es superior a 0.05 no se puede rechazar la hipótesis nula por lo que, a un nivel de significación del 5\%, concluimos que todos los valores del dado aparecen en la misma proporción. Dicho de otra forma, el dado está bien construido.\\
+\subsection{Supuesto Práctico 10}
+a siguiente tabla muestra información sobre el número de ejemplares de 7 especies de peces avistados aguas arriba y aguas abajo en un río.\\
+\\
+$$\includegraphics[width=0.5\textwidth]{Imagen5_Practica18.jpg}$$\\
+ontrastar, a un nivel de significación del 5\%, si la especie de pez y la zona de avistamiento pueden considerarse variables independientes.\\
+$$\textbf{Soluci\'on del Supuesto Pr\'atico 10}$$
+En primer lugar, introduzcamos en R los datos que proporciona el enunciado y construyamos la tabla de contingencia.
+<<>>=
+frecuencias <- c(37, 19, 12, 10, 10, 7, 18, 20, 11, 8, 16, 12, 59, 24)
+frecuencias
+
+tabla_conting <- matrix (frecuencias, 7, 2, byrow = TRUE, dimnames = list(c("A", "B", "C
+", "D", "E", "F", "G"), c("Aguas_Arriba", "Aguas_abajo")))
+tabla_conting
+@
+El contraste de hipótesis que se debe resolver es:\\
+\begin{center}
+$H_0\,\equiv$\,La especie y la zona de avistamiento son independientes\\
+$H_1\,\equiv$\,La especie y la zona de avistamiento no son independientes
+\end{center}
+A continuación, usaremos la función \textbf{chisq.test} (sin aplicar la corrección por continuidad) para resolver el contraste.
+<<>>=
+chisq.test(tabla_conting, correct = FALSE)
+@
+El estadístico de contraste, que sigue una distribución chi-cuadrado con 6 grados de libertad, toma el valor \textbf{7.7604}. El p-valor asociado al contraste es \textbf{0.2562}. Como este p-valor es mayor que 0.05, no podemos rechazar la hipótesis nula por lo que concluimos que la especie y la zona de avistamiento son variables independientes. Esto es, para cada especie, se observan el mismo número de peces aguas arriba y aguas abajo en el río.\\
+\subsection{Supuesto Práctico 11}
+Se realiza una investigación para determinar si hay alguna asociación entre el peso de un estudiante y un éxito precoz en la escuela. Se selecciona una muestra de 50 estudiantes y se clasifica a cada uno según dos criterios, el peso y el éxito en la escuela. Los datos se muestran en la tabla adjunta\\
+$$\includegraphics[width=0.5\textwidth]{Imagen6_Practica18.jpg}$$
+Contrastar, a un nivel de significación del 5\%, si las dos variables estudiadas están relacionadas o si, por el contrario, son independientes.\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 11}$$\\
+Introducimos los datos en \textbf{R}
+<<>>=
+frecuencias <- c(162, 263, 38, 37)
+frecuencias
+
+tabla_conting <- matrix (frecuencias, 2, 2, byrow = TRUE, dimnames = list(c("Exito = Sí",
+"Exito = No"), c("Sobrepeso = Sí", "Sobrepeso = No")))
+tabla_conting
+@
+El contraste de hipótesis que se debe resolver es:
+\begin{center}
+$H_0\,\equiv\,$El exito en la escuela y el sobrepeso son independientes\\
+$H_0\,\equiv\,$El exito en la escuela y el sobrepeso no son independientes
+\end{center}
+\newpage
+Vamos a resolver el contraste usando la función \textbf{chisq.test} (sin aplicar la corrección por continuidad).
+<<>>=
+chisq.test(tabla_conting, correct = FALSE)
+@
+El p-valor asociado a este contraste es \textbf{0.04083}. Como este \textbf{p-valor} es menor que \textbf{0.05}, se rechaza la hipótesis nula del contraste, por lo que concluimos que el éxito escolar y el sobrepeso son variables dependientes. Esto es, los valores de una dependen de los valores de la otra.\\
+\subsection{Supuesto Práctico 12}
+Se quiere comprobar si la proporción de hombres y mujeres en un municipio andaluz es la misma o no. Para ello, se selecciona una muestra aleatoria de habitantes del municipio, de los cuales 258 son hombres y 216 son mujeres. A un nivel de significación del 5\%, ¿puede asumirse cierta la igualdad en el número de hombres y mujeres?\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 12}$$
+Comencemos planteando las hipótesis del contraste. En este caso, se quiere probar la igualdad de hombres y de mujeres en el municipio. Para ello, es posible plantear el contraste de hipótesis de dos formas distintas. Por un lado, se puede contrastar si la proporción de hombres es de 0.5 (en cuyo caso la proporción de mujeres será también 0.5 y habrá equidad entre ambos géneros) frente a que esta proporción es distinta de 0.5. Pero, alternativamente, se puede contrastar si la proporción de mujeres es de 0.5 (lo que implica que la proporción de hombre será, igualmente, de 0.5 y habrá equidad entre géneros) frente a que esta proporción es distinta de 0.5.\\
+\\
+En cualquier caso, el contraste a resolver es:
+\begin{center}
+$H_0\,\equiv\,p\,=\,0.5$\\
+$H_1\,\equiv\,p\,\neq\,0.5$
+\end{center}
+Donde p representa la proporción de hombres (o de mujeres, dependiendo de la forma de resolver el contraste que se siga) en la población.\\
+\\
+Utilicemos la función \textbf{binom.test} para resolver el contraste.
+<<>>=
+binom.test(258, n = 474, p = 0.5, alternative = "two.sided", conf.level = 0.95)
+@
+\newpage
+En la salida aparecen los datos de entrada que se han usado para resolver el contraste (258 hombres de 474 habitantes muestreados) así como el tipo de la hipótesis alternativa (distinto de) y la proporción que se ha usado como referente para el contraste (0.5).\\
+\\
+También aparece un p-valor, que es el que nos ayuda a resolver el contraste. En este caso, el p-valor es \textbf{0.05956}. Como es mayor que 0.05, no podemos rechazar la hipótesis nula, por lo que podemos asumir que la proporción de hombres en la población es de 0.5. Consecuentemente, la proporción de mujeres también puede considerarse igual a 0.5 y puede concluirse que el número de hombres y mujeres en el municipio es el mismo.\\
+\\
+Por último, en la salida se incluye un intervalo de confianza al nivel de confianza indicado en la llamada a \textbf{binom.test} (95\% en nuestro caso), para la proporción de hombres en el municipio. Este intervalo es \textbf{(0.4982, 0.5897)}. Como era de esperar, la proporción de referencia pertenece al intervalo calculado.\\
+\\
+Si se hubiese optado por considerar p como la proporción de mujeres en el municipio y resolver el contraste a partir de esta proporción se llegaría a la misma conclusión, tal y como se muestra a continuación.
+<<>>=
+binom.test(216, n = 474, p = 0.5, alternative = "two.sided", conf.level = 0.95)
+@
+\subsection{Supuesto Práctico 13}
+Entre los pacientes con cáncer de pulmón, el 90\% o más muere generalmente en el espacio de tres años. Como resultado de nuevas formas de tratamiento, se cree que esta tasa se ha reducido. En un reciente estudio sobre 150 paciente diagnosticados de cáncer de pulmón, 128 murieron en el espacio de tres años. ¿Se puede afirmar que realmente ha disminuido la tasa de mortalidad?\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 13}$$
+En primer lugar, vamos a plantear las hipótesis del contraste:
+\begin{center}
+$H_0\,\equiv\,p\,\geq\,0.9$\,el tratamiento no es efectivo\\
+$H_1\,\equiv\,p\,<\,0.9$\,el tratamiento es efectivo
+\end{center}
+A continuación, utilizaremos la función \textbf{binom.test} para resolver el contraste. Teniendo en cuenta el número de pacientes de la muestra que fallecieron (128), el número de pacientes totales en la muestra (150), la proporción que se quiere contrastar (0.9) y la forma de la hipótesis alternativa (“menor que”).
+<<>>=
+binom.test(128, 150, p = 0.9, alternative = "less", conf.level = 0.95)
+@
+El p-valor asociado al contraste es \textbf{0.04396}. De manera que, considerando un nivel de significación del 5\%, rechazamos la hipótesis nula, por lo que se puede concluir que la proporción de pacientes que fallecieron en el espacio de tres años es inferior a 0.9 y, consecuentemente, que el tratamiento es efectivo.\\
+\subsection{Supuesto Práctico 14}
+Se realiza un estudio sobre el tiempo en horas de un tipo determinado de escáner antes de la primera avería. Se ha observado una muestra de 10 escáner y se ha anotado el tiempo de funcionamiento en horas: 18.21; 2.36;  17.3; 16.6; 4.70; 3.63; 15.56; 7.35; 9.78; 14.69. A un nivel de significación del 5\%, ¿se puede considerar aleatoriedad en la muestra?\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 14}$$
+Formulamos el contraste que debemos resolver:
+\begin{center}
+$H_0\,\equiv\,$Los datos de la muestra son aleatorios\\
+$H_1\,\equiv\,$Los datos de la muestra no son aleatorios
+\end{center}
+Comenzamos introduciendo los datos en \textbf{R}:
+<<>>=
+datos <- c(18.21, 2.36, 17.3, 16.6, 4.70, 3.63, 15.56, 7.35, 9.78, 14.69)
+datos
+@
+Para resolver el contraste, cargamos el paquete \textbf{randtests} y, a continuación, llamamos a la función \textbf{runs.test}. Cuando llamamos a esta función, debemos tener en cuenta que la hipótesis alternativa es del tipo \textbf{“distinto de”}. Por otra parte, como el enunciado no especifica ningún punto de corte para transformar los valores del vector numérico en valores dicotómicos, este punto de corte vendrá dado por la mediana de los datos \textbf{(función median en R)}.
+<<fig=TRUE>>=
+library(randtests)
+runs.test (datos, alternative = "two.sided", threshold = median(datos), plot = TRUE)
+@
+\\
+Según los resultados del test de rachas, se han encontrado 7 rachas (runs), que vienen separadas por líneas discontinuas verticales. Hay 5 valores por encima de la mediana (n1), marcados en negro, y otros 5 valores por debajo de la mediana (n2), marcados en rojo.\\
+\\
+El \textbf{p-valor} asociado al contraste es \textbf{0.5023} superior a 0.05, por lo que no es posible rechazar la hipótesis nula. Por tanto, podemos concluir que los datos de la muestra son aleatorios.
+\newpage
+\subsection{Supuesto Práctico 15}
+Las puntuaciones de 10 individuos en una prueba de una oposición han sido las siguientes: 41.81, 40.30, 40.20, 37.14, 39.29, 38.79, 40.73, 39.26, 35.74, 41.65. ¿Puede suponerse, a un nivel de significación del 5\% que dichas puntuaciones se ajustan a una distribución normal de media 40 y desviación típica 3?\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 15}$$
+El contraste de hipótesis que se plantea es el siguiente:
+\begin{center}
+$H_0\,\equiv\,$Los datos de la muestra proceden de una distribución N(40,3)\\
+$H_1\,\equiv\,$Los datos de la muestra no proceden de una distribución N(40,3)
+\end{center}
+Comenzamos introduciendo los datos en \textbf{R}:
+<<>>=
+datos <- c(41.81, 40.30, 40.20, 37.14, 39.29, 38.79, 40.73, 39.26, 35.74, 41.65)
+datos
+@
+A continuación, se resuelve el contraste mediante una llamada a la función \textbf{ks.test}. Debemos tener en cuenta que la distribución de comparación es la distribución normal (por tanto, el argumentoSupuesto Práctico 16 y tomará el valor pnorm) de media igual a 40 y desviación típica igual a 3.
+<<>>=
+ks.test(datos, y = pnorm, 40, 3, alternative = "two.sided")
+@
+En este caso, el valor del estadístico de contraste es \textbf{0.27314} y el \textbf{p-valor} asociado al contraste es \textbf{0.3752}. Como el p-valor es superior a 0.05 no podemos rechazar la hipótesis nula, por lo que concluimos que los datos de la muestra proceden de una distribución normal de media 40 y de desviación típica 3.\\
+\subsection{Supuesto Práctico 16}
+En unos grandes almacenes se realiza un estudio sobre el rendimiento de ventas de los vendedores. Para ello, se observa durante 10 días el número de ventas de dos vendedores:\\
+\\
+Vendedor A:   10    40    60    15    70    90    30     32      22      13\\
+Vendedor B:  45    60   35    30    30    15     50     20       32      9\\
+\\
+Contrastar, considerando un nivel de significación del 5\%, si los rendimientos medianos de ambos vendedores pueden asumirse iguales.\\
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 16}$$\\
+Comenzamos introduciendo los datos de ventas de los dos vendedores:
+<<>>=
+datosA <- c (10, 40, 60, 15, 70, 90, 30, 32, 22, 13)
+datosA
+
+datosB <- c (45, 60, 35, 30, 30, 15, 50, 20, 32, 9)
+datosB
+@
+A continuación, vamos a plantear el contraste que se debe resolver:
+\begin{center}
+$H_0\,\equiv\,M_{eA}\,-\,M_{eB}\,=\,0$\\
+$H_1\,\equiv\,M_{eA}\,-\,M_{eB}\,\neq\,0$
+\end{center}
+O, equivalentemente,
+\begin{center}
+$H_0\,\equiv\,M_{eA}\,=\,M_{eB}$\\
+$H_1\,\equiv\,M_{eA}\,\neq\,M_{eB}$
+\end{center}
+amos a resolver el contraste utilizando la función \textbf{wilcox.test}. Para ello, tendremos en cuenta que los datos proceden de muestras independientes, que el valor de la diferencia entre las medianas que se pretende comprobar es 0 y que la hipótesis alternativa del contraste es del tipo “distinto de”. Además, indicaremos que se incluya el intervalo de confianza para la diferencia de las medianas entre las salidas de la función y que no se aplique la corrección por continuidad.
+<<>>=
+wilcox.test(datosA, y = datosB, alternative = "two.sided", mu = 0, paired = FALSE,
+correct = FALSE, conf.int = TRUE, conf.level = 0.95)
+@
+En este caso, el p-valor asociado al contraste es, aproximadamente, 0.85. Como este p-valor es mayor que 0.05 no se puede rechazar la hipótesis nula, considerando un nivel de significación del 5\%. Por tanto, concluimos que las medianas de las ventas de ambos vendedores pueden asumirse iguales. El intervalo de confianza para la diferencia de las medianas incluye, como era de esperar, el valor 0.\\
+\subsection{Supuesto Práctico 17}
+En un encinar de Navarra se pretende comprobar si un tratamiento ayuda a disminuir el nivel de húmedas de las hojas de las encinas. Para ello, se realiza un estudio a 10 encinas, en las que se seleccionan aleatoriamente 10 hojas y se registra el nivel de humedad de las hojas antes y después del tratamiento. Los resultados son los siguientes:\\
+\\
+$$\includegraphics[width=0.5\textwidth]{Imagen7_Practica18}$$\\
+Suponiendo un nivel de significación del 5\%, ¿Puede suponerse efectivo el tratamiento?
+\newpage
+$$\textbf{Soluci\'on del Supuesto Pr\'actico 17}$$\\
+En primer lugar, introduzcamos los datos en dos vectores numéricos en \textbf{R}.
+<<>>=
+datosAntes <- c(10.5, 9.7, 13.3, 7.5, 12.8, 15.2, 11.2, 10.7, 5.2, 18.9)
+datosAntes
+
+datosDespues <- c(11.2, 7.8, 9.2, 3.4, 8.9, 10.8, 11.4, 8.5, 6.2, 11.1)
+datosDespues
+@
+El contraste que se debe resolver es el siguiente:\\
+\begin{center}
+$H_0\,\equiv\,Me_{Antes}\,=\,Me_{Despues}$\\
+$H_1\,\equiv\,Me_{Antes}\,>\,Me_{Despues}$
+\end{center}
+Vamos a resolver el contraste usando la función \textbf{wilcox.test}. Hay que recordar que como los datos son relacionados, debemos asignar al parámetro \textbf{paired} el valor \textbf{TRUE}.
+<<>>=
+wilcox.test (datosAntes, y = datosDespues, alternative = "greater", mu = 0, paired = TRUE
+, correct = FALSE)
+@
+En este ejemplo, el p-valor asociado al contraste es 0.013, inferior a 0.05, por lo que se  rechaza la hipótesis nula considerando un nivel de significación del 5\%. Esto quiere decir que el tratamiento utilizado es efectivo para reducir el nivel de humedad de las hojas de las encinas.
+\newpage
+\begin{center}\subsection{Ejercicios Guiados}\end{center}
+\subsubsection{Ejercicio Guiado 1}
+Un fabricante diseña un experimento para estimar la tensión de ruptura media de una fibra es 20. Para ello, observa las tensiones de ruptura, en libras, de 16 hilos de dicha fibra seleccionados aleatoriamente.\\
+\\
+a) Si la tensión de ruptura se distribuye según una normal de desviación típica\\
+\\
+b) Si la tensión de ruptura se distribuye según una normal de desviación típica desconocida.\\
+\\
+Las tensiones son: 20.8, 20.6, 21.0, 20.9, 19.9, 20.2, 19.8, 19.6, 20.9, 21.1, 20.4, 20.6, 19.7, 19.6, 20.3, 20.7.\\
+$$\textbf{Soluci\'on del Ejercicio Guiado 1}$$\\
+En ambos casos, el contraste de hipótesis que debemos resolver es:\\
+\begin{center}
+$H_0\,\equiv\,\mu\,=\,20$\\
+$H_1\,\equiv\,\mu\,\neq\,20$
+\end{center}
+En primer lugar, introduciremos en un vector los datos de las 16 tensiones observadas.
+<<>>=
+tensiones <- c(20.8, 20.6, 21.0, 20.9, 19.9, 20.2, 19.8, 19.6, 20.9, 21.1, 20.4, 20.6, 
+19.7, 19.6, 20.3, 20.7)
+tensiones
+@
+También indicamos el nivel de significación, $\mu_0$  y la desviación típica poblacional de la variable que proporciona el enunciado.
+<<>>=
+alpha <- 0.02
+alpha
+
+mu_0 <- 20
+mu_0
+
+desv_tipica <- 0.45
+desv_tipica
+@
+\textbf{a) Si la tensión de ruptura se distribuye según una normal de desviación típica}\\
+\\
+En este primer caso, y dado que conocemos la desviación típica poblacional de la distribución de la tensión de la fibra, debemos calcular manualmente los valores del estadístico de contraste y del valor crítico, que serán:
+<<>>=
+n <- length(tensiones)
+n
+
+media <- mean(tensiones)
+media
+
+Z <- (media - mu_0) / (desv_tipica/sqrt(n))
+Z
+@
+El siguiente Proceso:
+<<>>=
+cuantil <- qnorm(1 - alpha/2)
+cuantil
+@
+De este modo, ya tenemos todo lo necesario para la resolución del contraste. Como el valor absoluto del estadístico de contraste \textbf{3.3888} es mayor que el cuantil $Z_{1 - \frac{\alpha}{2}}$ , rechazamos la hipótesis nula en favor de la alternativa. Es decir, no puede asumirse que la tensión media de ruptura de la fibra sea de 20 unidades.\\
+\\
+\textbf{b) Si la tensión de ruptura se distribuye según una normal de desviación típica desconocida}.\\
+\\
+Cuando la desviación típica no se conoce, usamos la función test para obtener el intervalo de confianza.
+<<>>=
+t.test(tensiones, alternative = "two.sided", mu = 20, conf.level = 0.98)
+@
+En este segundo caso, el valor del estadístico de contraste es \textbf{2.9154}. El p-valor asociado al contraste es \textbf{0.01066}, que al ser menor que \textbf{0.02}, el nivel de significación, nos lleva también al rechazo de la hipótesis nula.\\
+\\
+En este segundo caso, el intervalo de confianza para la tensión media de la fibra, al 98\% de confianza, es \textbf{(20.04092, 20.72158)}.
+\newpage
+\subsubsection{Ejercicio Guiado 2}
+En una muestra de 40 alumnos, 25 de ellos están conformes con las decisiones que ha tomado el profesor con respecto a las calificaciones. ¿Puede suponerse, con un nivel de significación del 5\%, que la mitad o más de los alumnos están de acuerdo con las calificaciones del profesor?\\
+$$\textbf{Soluci\'on del Ejercicio Guiado 2}$$\\
+En este caso, el contraste que se debe resolver es:
+\begin{center}
+$H_0\,\equiv\,\pi\,\geq\,0.5$\\
+$H_1\,\equiv\,\pi\,<\,0.5$
+\end{center}
+En este caso, debemos utilizar la función \textbf{prop.test} para resolver el contraste de hipótesis anterior. Disponemos tanto del número de alumnos que presentan la característica de interés (estar conforme con el profesor) como del número total de alumnos en la muestra, de manera que podemos realizar la llamada a la función tal y como sigue:
+<<>>=
+prop.test(25, 40, p = 0.5, alternative = "less", conf.level = 0.95)
+@
+El p-valor para este contraste es \textbf{0.9226}, el cual es mayor que el nivel de significación, que es 0.05. Por ello, no podemos rechazar la hipótesis nula del contraste y concluiremos diciendo que la mitad o más de los alumnos están de acuerdo con las calificaciones del profesor.
+\newpage
+\subsubsection{Ejercicio Guiado 3}
+Una agencia estatal vigila la calidad del agua para la cría de peces. Esta agencia desea comparar la cantidad media de cierta sustancia tóxica en dos ríos contaminados por desperdicios industriales. Se seleccionaron 11 muestras en un río y 8 muestras en el otro. Los resultados de los análisis fueron:\\
+\\
+Río 1: 10, 10, 12, 13, 9, 8, 12, 12, 10, 14, 8\\
+\\
+Río 2: 11, 8, 9, 7, 10, 8, 8, 10\\
+\\
+Si las dos poblaciones son normales e independientes, ¿puede suponerse que la cantidad media de sustancia tóxica presente en ambos ríos es la misma? Considerar un nivel de significación del 5\%.\\
+$$\textbf{Soluci\'on del Ejercicio Guiado 3}$$\\
+En primer lugar introducimos los datos en R:
+<<>>=
+Rio1 <- c(10, 10, 12, 13, 9, 8, 12, 12, 10, 14, 8)
+Rio1
+
+Rio2 <- c(11, 8, 9, 7, 10, 8, 8, 10)
+Rio2
+@
+Aunque el enunciado nos pide resolver un contraste de hipótesis para la diferencia de la cantidad media de sustancia tóxica en ambos ríos, primero debemos saber si la variabilidad del nivel de sustancia tóxica en ambos ríos puede considerarse igual. Para ello, resolveremos el siguiente contraste de hipótesis:\\
+\begin{center}
+$H_0\,\equiv\,\sigma_1^2\,=\,\sigma_2^2$\\
+$H_1\,\equiv\,\sigma_1^2\,\neq\,\sigma_2^2$
+\end{center}
+Para resolver este primer contraste, empleamos la función \textbf{var.test}.
+<<>>=
+var.test(Rio1, Rio2, alternative = "two.sided", conf.level = 0.90)
+@
+Según los resultados de \textbf{var.test}, el estadístico de contraste toma el valor \textbf{2.1846}. El p-valor asociado al contraste es \textbf{0.3119}, que es mayor que el nivel de significación (0.10). Por tanto, no podemos rechazar la hipótesis nula o, equivalentemente, podemos asumir que ambas varianzas son iguales en ambos ríos.\\
+\\
+Teniendo en cuenta esta información, resolveremos el contraste para la diferencia de medias, que en este caso toma la forma:\\
+\begin{center}
+$H_0\,\equiv\,\mu_1\,-\,\mu_2\,=\,0$\\
+$H_1\,\equiv\,\mu_1\,-\,\mu_2\,\neq\,0$
+\end{center}
+Vamos a realizar una llamada a la función \textbf{t.test} para resolver este contraste.
+<<>>=
+t.test(Rio1, Rio2, alternative = "two.sided", mu = 0, var.equal = TRUE, conf.level =  
+0.90)
+@
+En este caso, el p-valor asociado al contraste es \textbf{0.0375}, que es menor que 0.10, el nivel de significación. Por tanto, rechazamos la hipótesis nula y concluimos que la cantidad media de tóxico en ambos ríos no es la misma.
+\newpage
+\subsubsection{Ejercicio Guiado 4}
+Una empresa farmacéutica está interesada en la investigación preliminar de un nuevo medicamento que parece tener propiedades reductoras del colesterol en la sangre. A tal fin se toma una muestra al azar de 6 personas, y se determina el contenido en colesterol antes y después del tratamiento. Los resultados han sido los siguientes:\\
+\\
+Antes: 217, 252, 229, 200, 209, 213\\
+\\
+Después: 209, 241, 230, 208, 206, 211\\
+\\
+Comprobar, a un nivel de significación del 4\% si la aplicación del medicamento es efectiva. Es decir, comprobar si el nivel medio de colesterol en sangre de los pacientes antes de la aplicación del medicamento es mayor o igual al nivel medio de colesterol en sangre después del tratamiento.\\
+$$\textbf{Soluci\'on del Ejercicio Guiado 4}$$\\
+El contraste que debemos resolver es:\\
+\begin{center}
+$H_0\,\equiv\,\mu_a\,-\,\mu_d\,\geq\,0$\\
+$H_1\,\equiv\,\mu_a\,-\,\mu_d\,<\,0$
+\end{center}
+Introducimos los datos en R:
+<<>>=
+Antes <- c(217, 252, 229, 200, 209, 213)
+Antes
+
+Despues <- c(209, 241, 230, 208, 206, 211)
+Despues
+@
+Estos datos son un claro ejemplo de datos pareados, ya que a los mismos individuos se les ha medido el nivel de colesterol en sangre antes y después del tratamiento.\\
+\\
+Ahora sólo nos queda realizar la llamada a la función \textbf{t.test}, sin olvidar indicar mediante el parámetro \textbf{paired} la relación que existe entre los conjuntos de datos.
+<<>>=
+t.test(Antes, Despues, alternative = "less", mu = 0, paired = TRUE, conf.level = 0.96)
+@
+En este caso, el estadístico de contraste toma el valor \textbf{0.91186} y el p-valor es \textbf{0.7982}. Este p-valor supera el nivel de significación, que recordemos es 0.04. Por tanto, no podemos rechazar la hipótesis nula y concluimos que los niveles medios de colesterol antes y después del tratamiento pueden considerarse iguales, poniendo así en duda la efectividad del mismo.
+\newpage
+\subsubsection{Ejercicio Guiado 5}
+Una determinada empresa quiere saber si su nuevo producto tendrá más aceptación en la población adulta o entre los jóvenes. Para ello, considera una muestra aleatoria de 400 adultos y 600 jóvenes, observando que sólo a 100 adultos y 300 jóvenes les había gustado su producto. Tomando un nivel de significación del 1\%, ¿puede suponerse que el producto gusta por igual en adultos y jóvenes?\\
+$$\textbf{Soluci\'on del Ejercicio Guiado 5}$$\\
+Para responder a la pregunta que se nos plantea, resolveremos el siguiente contraste de hipótesis:\\
+\begin{center}
+$H_0\,\equiv\,\pi_A\,-\,\pi_J\,=\,0$\\
+$H_1\,\equiv\,\pi_A\,-\,\pi_J\,\neq\,0$
+\end{center}
+Donde $\pi_A$\, y\, $\pi_J$\, es la proporción de adultos y jóvenes, respectivamente, a los que gusta el producto.\\
+\\
+En este caso debemos utilizar la función prop.test para resolver este contraste. Pero primero, debemos crear un vector que indique el número de adultos y jóvenes a los que les gusta el producto así como un segundo vector con el número total de adultos y jóvenes encuestados.
+<<>>=
+Adul_Jov_Gusta_Producto <- c(100, 300)
+Adul_Jov_Gusta_Producto
+
+Adul_Jov_Total <- c(400, 600)
+Adul_Jov_Total
+@
+Una vez hecho esto, llamamos a la función \textbf{prop.test}.
+<<>>=
+prop.test(Adul_Jov_Gusta_Producto, Adul_Jov_Total, alternative = "two.sided",  conf.level
+= 0.99)
+@
+Según los resultados que proporciona \textbf{prop.test}, el p-valor asociado a este contraste es muy pequeño, concretamente \textbf{4.512e-15}. Este p-valor es menor que 0.01, el nivel de significación. Por eso, rechazamos la hipótesis nula en favor de la alternativa y podemos afirmar que el producto no gusta por igual entre adultos y jóvenes.
+\newpage
+\begin{center}\subsection{Ejercicios Propuestos}\end{center}
+\subsubsection{Ejercicio Propuesto 1}
+Se realiza un experimento para estudiar el nivel (en minutos) que se requiere para que la temperatura del cuerpo de un lagarto del desierto alcance los 45º partiendo de la temperatura normal de su cuerpo mientras está en la sombra. Se supone que la varianza es conocida. Se obtuvieron las siguientes observaciones: 10.1 ; 12.5 ; 12.2 ; 10.2 ; 12.8 ; 12.1 ; 11.2 ; 11.4 ; 10.7 ; 14.9 ; 13.9 ; 13.3. Se pide:\\
+\\
+a) Hallar estimaciones puntuales de la media y la varianza\\
+\\
+b) Supóngase que la variable X: “Tiempo en alcanzar los 45º sigue una ley Normal\\
+\\
+b1) ¿Puede concluirse que el tiempo medio requerido para alcanzar la dosis letal es de 15 minutos?\\
+\\
+b2) ¿Puede concluirse que el tiempo medio requerido para alcanzar la dosis letal es inferior a 13 minutos?\\
+$$\textbf{Soluci\'on del Ejercicio Propuesto 1}$$\\
+Introducimos los datos en R:
+<<>>=
+Temperatura <- c(10.1 , 12.5 , 12.2 , 10.2 , 12.8 , 12.1 , 11.2 , 11.4 , 10.7 , 14.9 , 
+13.9 , 13.3)
+Temperatura
+@
+\textbf{a) Hallar estimaciones puntuales de la media y la varianza:}\\
+\\
+Proceso para encontrar la Media:
+<<>>=
+media <- mean(Temperatura)
+media
+@
+Proceso para encontrar la Varianza:
+<<>>=
+var <- var(Temperatura)
+var
+@
+Con los Resultados obtenidos establecemos que para el literal a) la Media es \textbf{12.10833} y la Varianza es \textbf{2.186288}\\
+\\
+\textbf{b1)¿Puede concluirse que el tiempo medio requerido para alcanzar la dosis letal es de 15 minutos?}\\
+\\
+Nos piden el siguiente contraste de hipótesis:\\
+\begin{center}
+$H_0:\,\mu\,=\,15$\\
+$H_1:\,\mu\,\neq\,15$
+\end{center}
+\newpage
+Proceso:
+<<>>=
+t.test(Temperatura, alternative = "two.sided", mu = 15, conf.level = 0.95)
+@
+El valor del estadístico de contraste experimental, \textbf{-6.7746}, deja  a la derecha una área menor que \textbf{0.000 < 0.025}. Por lo tanto, se rechaza la hipótesis nula de que el tiempo medio requerido para alcanzar la dosis letal es de 15 minutos.\\
+\\
+\textbf{b2)¿Puede concluirse que el tiempo medio requerido para alcanzar la dosis letal es inferior a 13 minutos?}\\
+Nos piden el siguiente contraste de hipótesis:\\
+\begin{center}
+$H_0:\,\mu\,\geq\,13$\\
+$H_1:\,\mu\,<\,13$
+\end{center}
+<<>>=
+t.test(Temperatura, alternative = "less", mu = 13, conf.level = 0.95)
+@
+El valor del estadístico de contraste experimental, \textbf{-2.089}, deja  a la derecha una área \textbf{0.030 < 0.05}. Por lo tanto se rechaza la hipótesis nula y se concluye que el  tiempo medio requerido para alcanzar la dosis letal es inferior a 13 minutos.
+\newpage
+\subsubsection{Ejercicio Propuesto 2}
+Se quieren comparar dos poblaciones de ranas pipiens aisladas geográficamente. Para ello se toman dos muestras de ambas poblaciones de tamaño 12 y 10 y se les mide la longitud del cuerpo expresado en milímetros.\\
+\\
+Población 1: 20,1; 22,5; 22,2 ; 30,2 ; 22,8 ; 22,1 ; 21,2 ; 21,4 ; 20,7 ; 24,9 ; 23,9 ; 23,3\\
+\\
+Población 2: 25,3 ; 31,2 ; 22,4 ; 23,1 ; 26,4 ; 28,2 ;21,3 ;31,1 ;26,2 ;21,4\\
+\\
+Contrastar la hipótesis de igualdad de medias a un nivel de significación del 5\%. (Suponiendo que la longitud se distribuya según una Normal).\\
+$$\textbf{Soluci\'on del Ejercicio Propuesto 2}$$\\
+Introducimos los datos en R:
+<<>>=
+Poblacion1 <- c(20.1, 22.5, 22.2 , 30.2 , 22.8 , 22.1 , 21.2 , 21.4 , 20.7 , 24.9 , 23.9
+, 23.3)
+Poblacion1
+
+Poblacion2 <- c(25.3,31.2 , 22.4 , 23.1 , 26.4 , 28.2 , 21.3 , 31.1 , 26.2 , 21.4)
+Poblacion2
+@
+En primer lugar realizamos el contraste de las varianzas:
+\begin{center}
+$H_0:\,\sigma_X^2\,=\,\sigma_Y^2$\\
+$H_1:\,\sigma_X^2\,\neq\,\sigma_Y^2$
+\end{center}
+Proceso para llevar a cabo la Soluci\'on:
+<<>>=
+var.test(Poblacion1, Poblacion2, alternative = "two.sided", conf.level = 0.95)
+@
+Para realizar un contraste de diferencia de medias de dos poblaciones independientes hay que contrastar previamente las varianzas de dichas poblaciones. Esta salida nos muestra el valor experimental del estadístico de contraste \textbf{(Fexp = 0.51989)}, este valor deja a la derecha un área igual a \textbf{0.3043}, por lo tanto no se puede rechazar la hipótesis nula de igualdad de varianzas.\\
+\\
+A continuación vamos a realizar el contraste de diferencia de medias:\\
+\begin{center}
+$H_0:\,\mu_X\,=\,\mu_Y$\\
+$H_0:\,\mu_X\,\neq\,\mu_Y$
+\end{center}
+Proceso para llevar a cabo la Soluci\'on:
+<<>>=
+t.test(Poblacion1, Poblacion2, alternative = "two.sided", mu = 0, var.equal = TRUE)
+@
+A continuación se realiza el contraste para la diferencia de medias suponiendo que las varianzas son iguales. La tabla nos muestra el valor experimental del estadístico de contraste $t_{exp} = -2.0097$ y el \textbf{p-valor = 0.0508}, por lo tanto no se puede rechazar la hipótesis nula de igualdad de medias. También, se puede concluir el contraste observando que el intervalo de confianza para la diferencia de medias \textbf{(-5.5398, 0.1032)} contiene al cero.
+\newpage
+\subsubsection{Ejercicio Propuesto 3}
+Se realiza un estudio, en el que participan 10 individuos, para investigar el efecto del ejercicio físico en el nivel de colesterol  en plasma. Antes del ejercicio se tomaron muestras de sangre para determinar el nivel de colesterol de cada individuo. Después, los participantes fueron sometidos a un programa de ejercicios. Al final de los ejercicios se tomaron nuevamente muestras de sangre y se obtuvo una segunda lectura del nivel de colesterol. Los resultados se muestran a continuación.\\
+\\
+Nivel previo: 182; 230; 160; 200; 160; 240; 260; 480; 263; 240\\
+\\
+Nivel posterior: 190; 220; 166; 150; 140; 220; 156; 312; 240; 250\\
+\\
+Se quiere saber si el ejercicio físico ha reducido el nivel de colesterol para un nivel de confianza del 95\%.\\
+$$\textbf{Soluci\'on del Ejercicio Propuesto 3}$$\\
+Introducimos los datos en \textbf{R}:
+<<>>=
+Nivelprevio <- c(182, 230, 160, 200, 160, 240, 260, 480, 263, 240)
+Nivelprevio
+
+Nivelposterior <- c(190, 220, 166, 150, 140, 220, 156, 312, 240, 250)
+Nivelposterior
+@
+A continuación vamos a realizar el contraste de diferencia de medias de dos poblaciones apareadas:
+\begin{center}
+$H_0:\,\mu_{Pr}\,-\,\mu_{Po}\,\leq\,0$\\
+$H_1:\,\mu_{Pr}\,-\,\mu_{Po}\,>\,0$
+\end{center}
+Proceso a realizar para llevar a cabo la soluci\'on:
+<<>>=
+t.test(Nivelprevio, Nivelposterior, alternative = "greater", mu = 0, paired = TRUE)
+@
+La salida muestra el valor experimental del estadístico de contraste \textbf{(t = 2.0525)} y \textbf{Sig. 0.03516}, menor que 0.05, y  se debe rechazar la hipótesis nula. Por lo tanto, el nivel medio de colesterol se reducirá con el ejercicio físico.
+\newpage
+\subsubsection{Ejercicio Propuesto 4}
+Se ignora la proporción de familias numerosas y con el fin de determinar dicha proporción se toma una muestra de 800 familias siendo la proporción observada de 0.18.  Se puede afirmar que la proporción de familias  numerosas es 0.20.\\
+$$\textbf{Soluci\'on del Ejercicio Propuesto 4}$$\\
+Se pide realizar el siguiente contraste $H_0: P = 0.20$ frente a la alternativa $H1: p \neq 20.$\\
+\\
+Según el enunciado de una muestra de 800 familias la proporción observada de familias numerosas es 0.18. Por lo tanto144 familias son numerosas y 656 no lo son.\\
+\\
+Proceso para llevar a cabo la Soluci\'on del Ejercicio:
+<<>>=
+prop.test(144,800, p = 0.20, alternative = "two.sided", conf.level = 0.95)
+@
+El p-valor de la prueba \textbf{(Sig. exacta (unilateral))} es \textbf{0.1707} mayor que 0.05. Por lo tanto no se rechaza la Hipótesis nula. Se puede afirmar que la proporción de familias numerosas  es 0.20.
+\newpage
+\subsubsection{Ejercicio Propuesto 5}
+Se sospecha que añadiendo al tratamiento habitual para la curación de una enfermedad un medicamento A, se consigue mayor número de curaciones. Tomamos dos grupos de enfermos de 100 individuos cada uno. A un grupo se le suministra el medicamento A y se curan 60 enfermos y al otro no se le suministra, curándose 55 enfermos. ¿Es efectivo el tratamiento A en la curación de la enfermedad?\\
+$$\textbf{Soluci\'on del Ejercicio Propuesto 5}$$\\
+Se pide realizar el siguiente contraste para llevar a cabo la soluci\'on de este ejercicio:
+\begin{center}
+$H_0:\,P_x\,\leq\,P_y$\\
+$H_1:\,P_x\,>\,P_y$
+\end{center}
+En cada grupo hay 100 enfermos a los que se les suministra el medicamento A. De los cuales hay 60 curados en un grupo  y 45 curados en el otro grupo.
+<<>>=
+curados <- c(60, 45)
+curados
+
+enfermos <- c(100, 100)
+enfermos
+
+prop.test(curados, enfermos, alternative = "greater", conf.level = 0.95)
+@
+El valor del estadístico Chi-Cuadrado es \textbf{3.9298} y el p-valor asociado es \textbf{0.02372} por lo tanto se debe rechazar la Hipótesis nula. Podemos afirmar que el medicamento A consigue un mayor número de curaciones.
+\newpage
+\subsubsection{Ejercicio Propuesto 6}
+En 5 zonas de la provincia de Granada (Ladihonda y Fazares, zonas muy secas y Cortijuela, Molinillo y Fardes, zonas húmedas) se hacen una serie de mediciones sobre las hojas de las encinas a lo largo de 3 años consecutivos: 1995, muy seco y 1996 y 1997, muy lluviosos.\\
+\\
+El objetivo es medir la simetría fluctuante en dichas hojas como indicador de stress en la planta. Bajo condiciones de stress (sequía, herbivoría, limitación por nutrientes…), la hipótesis es que la asimetría aumente. Contamos con la siguiente información:
+\begin{itemize}
+\item {Localización árboles: 5 zonas, dos en zonas muy secas (Hoya Guadix-Baza, Ladihonda y Fazares) y tres en zonas con mayor precipitación (Cortijuela, Molinillo, Fardes). En esta última, Fardes, son árboles situados en la ladera de un río (presumiblemente poco afectados por años más o menos secos).}\\
+\item{Años de climatología diferente: 1995 año muy seco y años 1996 y 1997, años muy lluviosos.}\\
+\item {Situación de la hoja: Canopy (copa de los árboles) y Sprouts (rebrotes, hojas nuevas que salen desde la parte inferior del tronco).}
+\end{itemize}
+Disponemos de un total de 2101 casos, cedidos por el Departamento de Ecología de la Universidad de Granada (España), de los que hemos seleccionado aleatoriamente una muestra de tamaño 15 que se presenta en la siguiente tabla:\\
+\\
+$$\includegraphics[width=0.5\textwidth]{Imagen8_Practica18}$$
+\newpage
+\begin{enumerate}
+\item ¿Se puede admitir que la longitud de las hojas de encina se distribuye normalmente?
+\item ¿Se puede admitir que la longitud media de las hojas es igual a 30 cm a un nivel de significación del 5\%? (Suponiendo que la varianza es conocida)
+\item Suponiendo que la asimetría de las hojas sigan una distribución Normal; comprobar mediante un contraste de hipótesis si existen diferencias significativas en la asimetría de las hojas teniendo en cuenta la situación de la hoja en el árbol.
+\item A un nivel de significación del 5\%, ¿es representativo el ajuste lineal entre la longitud y la asimetría? ¿Cuál sería la expresión del modelo? ¿Cuánto explica el modelo?
+\end{enumerate}
+$$\textbf{Soluci\'on del Ejercicio Propuesto 6}$$
+\textbf{a) ¿Se puede admitir que la longitud de las hojas de encina se distribuye normalmente?}\\
+\\
+Introducimos los datos en R:
+<<>>=
+longitud <- c(26.51,30.17, 34.24, 31.04, 34.99, 30.48, 25.07, 25.04, 29.16,35.12, 25.41,
+27.02, 23.04, 27.69, 34.71)
+longitud
+@
+Calculamos la media y la desviación típica:
+<<>>=
+mean(longitud)
+
+sd(longitud)
+@
+Se contrasta la normalidad mediante el contraste de Kolmogorov-Smirnov.
+<<>>=
+ks.test(longitud, y = pnorm, 29.31267,  4.062451, alternative = "two.sided") 
+@
+Mediante la prueba de Kolmogorov-Smirnov obtenemos que el \textbf{p-valor es 0.8173}, mayor que el nivel de significación 0.05, por lo tanto no se puede rechazar la hipótesis nula y admitimos que la longitud de las hojas sigue una distribución Normal.\\
+\\
+\textbf{b) ¿Se puede admitir que la longitud media de las hojas es igual a 30 cm a un nivel de significación del 5\%? (Suponiendo que la varianza es conocida)}\\
+\\
+Nos piden el siguiente contraste de hipótesis:\\
+\begin{center}
+$H_0:\,\mu\,=\,30$\\
+$H_1:\,\mu\,\neq\,30$
+\end{center}
+Proceso a Realizar:
+<<>>=
+t.test(longitud, alternative = "two.sided", mu = 30, conf.level = 0.95)
+@
+El valor del nivel crítico o p-valor (Sig. (bilateral)) es \textbf{0.5229}, mayor que el nivel de significación 0.05, por lo que no se rechaza la hipótesis nula y admitimos que la longitud media de las hojas de encina es igual a 30 cm.\\
+\\
+\textbf{c) Suponiendo que la asimetría de las hojas sigan una distribución Normal; comprobar mediante un contraste de hipótesis si existen diferencias significativas en la asimetría de las hojas teniendo en cuenta la situación de la hoja en el árbol}.
+<<>>=
+asimetriaCanopy<- c(0.028, 0.010, 0.080, 0.340, 0.087, 0.040, 0.010, 0.021, 0.135, 0.010,
+0.094, 0.153)
+asimetriaCanopy
+
+asimetriaSprouts<- c(0.156, 0.172, 0.077)
+asimetriaSprouts
+@
+Para poder realizar el contraste de igualdad de medias de dos poblaciones independientes es necesario contrastar previamente la igualdad de varianzas.\\
+\begin{center}
+$H_0:\,\sigma_c^2\,=\,\sigma_s^2$\\
+$H_1:\,\sigma_c^2\,\neq\,\sigma_s^2$
+\end{center}
+Donde $\sigma_c^2$ representa la varianza de la asimetría en el Canopy y $\sigma_s^2$ representa la varianza de la asimetría en el Sprouts.
+<<>>=
+var.test(asimetriaCanopy, asimetriaSprouts, alternative = "two.sided", conf.level = 0.95)
+@
+Analizando la información relativa al contraste de hipótesis que se incluye en la salida de var.test, vemos que el valor del estadístico de contraste es 3.4611. La distribución F de Snedecor que sigue el estadístico de contraste tiene 11 grados de libertad en el numerador y 2 en el denominador. El p-valor asociado al contraste es 0.4908. Como este valor es superior al nivel de significación (que para este ejemplo es 0.05), no podemos rechazar la hipótesis nula que hemos planteado. Es decir, se puede considerar que la varianza de ambas poblaciones son iguales.\\
+\\
+Una vez  aceptada  la igualdad de  varianzas, realizamos  en contraste  de diferencia de medias de dos poblaciones normales independientes.
+<<>>=
+t.test(asimetriaCanopy, asimetriaSprouts, alternative  =  "two.sided",  mu  =  0,     
+var.equal = TRUE)
+@
+En la salida se incluye el valor del estadístico de contraste (-0.88477), los grados de libertad de la distribución t de Student que sigue el estadístico de contraste (13) y el p-valor (0.3924). Como el p-valor es mayor que el nivel de significación fijado (0.05), no rechazamos la hipótesis nula y se deduce que las partes de la planta (Canopy y Sprouts) no influyen en la asimetría de las hojas.\\
+\\
+\textbf{d) A un nivel de significación del 5\%, ¿es representativo el ajuste lineal entre la longitud y la asimetría? ¿Cuál sería la expresión del modelo? ¿Cuánto explica el modelo?}\\
+\\
+Introducimos los datos de la asimetría en R  
+<<>>=
+longitud <- c(26.51,30.17, 34.24, 31.04, 34.99, 30.48, 25.07, 25.04, 29.16, 35.12, 25.41,
+27.02, 23.04, 27.69, 34.71) 
+longitud
+
+asimetria<- c(0.028, 0.010, 0.080, 0.340, 0.087, 0.040, 0.010, 0.021, 0.135, 0.010, 0.094
+, 0.153, 0.156, 0.172, 0.077)
+asimetria
+
+reg_lin <- lm(asimetria ~ longitud)
+reg_lin 
+@
+Podemos obtener más información sobre el modelo de regresión que hemos calculado aplicando la función su mmary al objeto que contiene los datos de la regresión, al cual hemos llamado reg-lin en este ejemplo.
+<<>>=
+summary(reg_lin)
+@
+Esta salida contiene una información más completa sobre el análisis. Así, por ejemplo, encontramos información sobre los residuos (en el apartado Residuals), que se definen como la diferencia entre el verdadero valor de la variable dependiente y el valor que pronostica el modelo de regresión. Cuanto más pequeños sean estos residuos mejor será el ajuste del modelo a los datos y más acertadas serán las predicciones que se realicen a partir de dicho modelo. 
+\end{document}
