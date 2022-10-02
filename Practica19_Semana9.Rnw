@@ -42,7 +42,7 @@
 {\bfseries\LARGE PRESENTADO POR: \par}
 {\bfseries\LARGE MORIS SALVADOR HENRIQUEZ LIMA \par}
 \vfill
-{\bfseries\Large Viernes 29 de Septiembre del 2022  \par}
+{\bfseries\Large Viernes 30 de Septiembre del 2022  \par}
 \end{titlepage}
 \newpage
 
