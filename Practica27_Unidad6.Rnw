@@ -1,0 +1,218 @@
+\documentclass{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[Lenny]{fncychap}
+\usepackage[labelfont=bf]{caption}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{fancyheadings}
+\usepackage{geometry}
+\pagestyle{fancy}
+\lhead{\scriptsize \textbf{Practicas en R 2022}}
+\chead{{\textbf UNIVERSIDAD DE EL SALVADOR\par}
+      {\textbf FACULTAD MULDISCIPLINARIA DE OCCIDENTE\par}
+      {\textbf DEPARTAMENTO DE MATEM\'ATICAS\par}}
+\rhead{\includegraphics[width=2cm, height=2cm]{Ues_Logo.jpg}}
+\rfoot{}
+\setlength{\headheight}{60.50192pt}
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+\geometry{left=2.5cm, right=2.5cm, bottom=2.5cm, top=3.5cm}
+
+\begin{document}
+\begin{titlepage}
+\centering
+{\bfseries\LARGE UNIVERSIDAD DE EL SALVADOR \par}
+\vspace{0.5cm}
+{\bfseries\LARGE FACULTAD MULDISCIPLINARIA DE OCCIDENTE\par}
+\vspace{0.5cm}
+{\bfseries\LARGE DEPARTAMENTO DE MATEM\'ATICAS\par}
+\vspace{2cm}
+{\bfseries\LARGE LICENCIATURA EN ESTAD\'ISTICA\par}
+\vspace{2cm}
+{\includegraphics[width=0.22\textwidth]{Ues_Logo.jpg}\par}
+\vspace{1cm}
+{\bfseries\LARGE PRACTICAS REALIZADAS EN EL SOFTWARE R \par}
+\vspace{2cm}
+{\bfseries\LARGE DOCENTE: \par}
+{\bfseries\LARGE LICENCIADO. JAIME ISAAC PEÑA \par}
+\vspace{1cm}
+{\bfseries\LARGE PRESENTADO POR: \par}
+{\bfseries\LARGE MORIS SALVADOR HENRIQUEZ LIMA \par}
+\vfill
+{\bfseries\Large Viernes 21 de Octubre del 2022  \par}
+\end{titlepage}
+\newpage
+
+\tableofcontents
+\newpage
+
+\SweaveOpts{concordance=TRUE}
+\begin{center}\section{REGRESI\'ON LINEAL SIMPLE}\end{center}
+Los modelos de regresión lineal son modelos probabilísticos basados en una función lineal,
+expresamos el valor de nuestra variable de estudio (interés), a la que también llamamos variable dependiente, en función de una o más variables a quienes llamamos variables independientes o explicativas, y las cuales suponemos tienen un efecto sobre nuestra variable de estudio. Los pasos básicos a seguir en el estudio de un modelo lineal son:\\
+\begin{itemize}
+\item Escribir el modelo matemático con todas sus hipótesis.
+\item Estimación de los parámetros del modelo.
+\item Inferencias sobre los parámetros.
+\item Diagnóstico del modelo.
+\end{itemize}
+El modelo de regresión más simple que nos podemos encontrar es aquel en donde únicamente se considera a solamente una variable independiente, y se quiere estudiar su efecto sobre la variable dependiente; la ecuación del modelo es:\\
+\\
+$$y_i\,=\,\beta_0\,+\,\beta_1x_i\,+u_i$$
+Donde:
+\begin{itemize}
+\item $y_i$\,; representa la observación i-ésima correspondiente de la variable dependiente, es decir, el valor de la variable dependiente para el i-ésimo individuo de la muestra.
+\item $x_i$\,; representa la observación i-ésima correspondiente de la variable independiente.
+\item $\beta_0$\,; representa el intercepto del modelo, es decir, valor de la variable dependiente cuando nuestra variable independiente toma el valor de cero. En muchos casos no tendrá interpretación, pues la variable independiente no puede tomar el valor de 0.
+\item $\beta_1$\,;representa la pendiente del modelo, es decir, el cambio esperado en la variable dependiente por cada cambio unitario realizado a la variable independiente.
+\item $u_i$\,; representa el efecto de las demás variables omitidas en el modelo.
+\end{itemize}
+Las hipótesis básicas del modelo, son las mismas a las consideradas en el Análisis de Varianza, que como recordarán son las siguientes:
+\begin{itemize}
+\item El promedio de las perturbaciones es cero, es decir, se cumple que:\\
+$E[u_i]$\,=\,;\,$\forall_i$
+\item La varianza de las perturbaciones es constante, es decir, se cumple que:\\
+$var(u_i)\,=\,\sigma^2\,;\,\forall_i$
+\item La distribución de las perturbaciones debe ser normal, es decir se cumple que:\\
+$u_i\,\approx\,N(0;\sigma^2)\,;\,\forall_i$
+\item Las perturbaciones son independientes, es decir se cumple que:\\
+$cov(u_i;u_j)\,=\,0\,;\,\forall_i\,\neq\,j$
+\end{itemize}
+Las cuales pueden resumirse en:\, $u_i\,\sim\,NIID(0,\sigma^2);\,\forall_i$
+\newpage
+En R la función a utilizar para realizar o ajustar un modelo de regresión es lm() (de lineal model). Esta función no nos ofrece ninguna salida en pantalla si no que nos crea un objeto, o mejor dicho, nosotros creamos un objeto que va a ser un modelo de regresión lineal, y el cual podemos referenciarlo posteriormente en nuestro análisis.\\
+\\
+La función lm tiene la siguiente sintaxis:\\
+lm(formula, data, subset)
+\begin{itemize}
+\item En formula escribimos: y $\sim$ x , lo cual significa que a la izquierda del símbolo $\sim$ especificamos quien es nuestra variable dependiente; mientras que a la derecha especificamos quien es nuestra variable independiente.
+\item En data especificamos el dataframe que contiene las variables del modelo, es recomendable que los datos se encuentren en un dataframe.
+\item En subset especificamos un subconjunto de observaciones para validar posteriormente el modelo. En caso que se desee utilizar conjuntos distinto para estimar y validar el modelo. Muy recomendado en muchas aplicaciones.
+\end{itemize}
+La función lm tiene muchas más opciones pero para conocer mejor su funcionamiento vamos a ver ejemplos.
+\subsection{EJEMPLO 1.}
+En el archivo “costes.dat” se encuentra la información correspondiente a 34 fábricas de producción en el montaje de placas para ordenador, el archivo contiene la información sobre el costo total (primera columna) y el número de unidades fabricadas (segunda columna). Suponga que deseamos ajustar un modelo de regresión simple a los datos para estimar el costo total en función del número de unidades fabricadas.\\
+\\
+Ejecutamos lo siguiente:\\
+\\
+Lectura de los datos:
+<<>>=
+getwd()
+Datos = read.table("costes.txt")
+Datos
+@
+Renombrando las variables:
+<<>>=
+names(Datos)=c("Costos","Unidades")
+head(Datos)
+@
+\newpage
+Diagrama de dispersion entre las dos variables:
+<<fig=TRUE>>=
+plot(Datos$Unidades,Datos$Costos)
+@
+\\
+Se aprecia una relación entre las variables por lo que se procede a ajustar el modelo de regresión:
+<<>>=
+regresion <- lm(Datos$Costos ~ Datos$Unidades)
+summary(regresion)
+@
+En este caso el modelo resultante sería:\\
+costos = 33.51\\
+\\
+Con los resultados obtenidos tanto con el p-valor como el modelo, son resultados no significativos, por lo tanto, volvemos a realizar los cálculos con el software R:
+<<>>=
+regresion2 <- lm(Datos$Costos ~ Datos$Unidades -1)
+summary(regresion2)
+@
+En este caso el modelo resultante sería: costos = 0.1335(unidades); el cual es un mejor modelo en términos de variabilidad explicada.\\
+\\
+Una vez estimados los parámetros del modelo, el siguiente paso es validarlo, es decir verificar si se
+cumplen las cuatro hipótesis básicas del modelo (nulidad, normalidad, independencia y
+homocesdasticidad de los residuos). Para verificar esto, podríamos realizar los siguientes pasos:\\
+\\
+Efectúa un análisis gráfico de bondad de ajuste del modelo
+<<fig=TRUE>>=
+par(mfrow = c(2, 2))
+plot(regresion2)
+par(oma=c(1,1,1,1), new=T, font=2, cex=0.5)
+mtext(outer=T, "Gráficos para validación del modelo: Costos en función de las unidades",
+side=3)
+@
+\\
+En los gráficos que se muestra en la parte superior se contrasta los cuatro supuestos. En el de la izquierda se verifican: nulidad, independencia y homocedasticidad; a partir del gráfico mostrado parece existir indicios de falta de homocedasticidad, por su parte los residuos pueden considerarse constante pues no muestran ningún patrón; sin embargo, la media de los residuos no parece ser nula, lo cual indica falta de linealidad en el modelo (es decir, es necesario incorporar más variables o tal vez términos cuadráticos). En la figura de la derecha se contrasta la normalidad, y puede apreciarse que los residuos parecen seguir una distribución normal.\\
+\\
+Por su parte, también es de mencionar que en el gráfico se muestran puntos que posiblemente sean observaciones atípicas, por lo que habría que estudiarlas.\\
+\\
+Información sobre el modelo ajustado que proporciona la función lm():
+\begin{itemize}
+\item \textbf{formula(regresion2)}: Extrae la fórmula del modelo.
+\item \textbf{coef(regresion2)}: Extrae el vector de coeficientes de regresión.
+\item \textbf{residuals(regresion2)}: Extrae el vector de residuos.
+\item \textbf{modelo2ted.values(regresion2)}: Extrae un vector con los valores estimados.
+\item \textbf{vcov(regresion2)}: Extrae la matriz de covarianzas de los parámetros.
+\item \textbf{ls.diag(regresion2)}: Calcula los residuales, errores estándar de los parámetros, distancias Cook.
+\item \textbf{step(regresion2)}: Permite obtener el mejor conjunto de regresión y proporciona la estimación de los coeficientes (válido únicamente en modelos de regresión múltiple).
+\end{itemize}
+De todos los resultados anteriores nos concentraremos en la instrucción: ls.diag(regresion2). Con esta instrucción obtenemos para cada observación en el conjunto de datos, medidas que nos ayudarán a identificar observación atípicas (tienen un impacto únicamente en las medidas resumen del modelo) y observaciones influyentes (tienen un efecto marcado en la estimación de los parámetros).
+\newpage
+\begin{center}\section{REGRESIÓN LINEAL MÚLTIPLE}\end{center}
+Al igual que en el modelo de regresión simple, el modelo de regresión múltiple trata de ajustar una ecuación matemática en la que se relacione a una única variable dependiente en función de dos o más variables independientes. La forma general del modelo es la siguiente:\\
+$$Y_i\,=\,\beta_0\,+\,\beta_1x_{1i}\,+\,\beta_2x_{2i}\,+...+\,\beta_kx_{ki}\,+\,\mu_i$$
+Como siempre debe cumplirse que:
+$$\mu_i\,\sim\,NIID(0, \sigma^2);\forall i$$
+La función para estimar cada uno de los parámetros del modelo, a partir de la información
+suministrada por la muestra, los datos disponibles, es como siempre lm(), sin embargo, en la expresión fórmula debemos escribir $y\,\sim\,x_1\,+\,x_2\,+...+\,x_k$. Todas las instrucciones utilizadas en regresión simple son válidas también para regresión múltiple (diagnosis de los residuos e identificación de puntos influyentes).\\
+\\
+Veamos el siguiente ejemplo.\\
+\subsection{EJEMPLO 2.}
+En el archivo “preciocasas.dat” tienen la información sobre 100 datos de precios de viviendas y sus características, el archivo se encuentra estructurado de la siguiente forma:
+\begin{itemize}
+\item Primera columna: precios de viviendas en euros.
+\item Segunda columna: superficie en metros cuadrados.
+\item Tercera: numero de cuartos de baño.
+\item Cuarta: número de dormitorios.
+\item Quinta: número de plazas de garaje.
+\item Sexta: edad de la vivienda .
+\item Séptima: 1 =buenas vistas y 0 =vistas corrientes
+\end{itemize}
+Suponga que deseamos estimar un modelo de regresión en el cual relacionemos el precio de una vivienda en función de sus características.\\
+\\
+Realizamos los siguiente:\\
+\\
+Lectura de los Datos:
+<<>>=
+datos <- read.table(file="preciocasas.txt")
+datos
+@
+Nombrando a las Columnas:
+<<>>=
+names(datos) <- c("precio", "x1", "x2", "x3", "x4", "x5", "x6" )
+head(datos)
+@
+\newpage
+Matriz de diagramas de dispersión
+<<fig=TRUE>>=
+plot(datos)
+@
+\\Se observa gráficamente que las variables independientes parecen influir en el comportamiento de nuestra variable dependiente.\\
+\\
+Ajustamos el modelo de regresión
+<<>>=
+modelo1 <- lm( precio ~ x1 + x2 + x3 + x4 + x5 + x6 , data = datos)
+@
+Resumen del modelo
+<<>>=
+summary(modelo1)
+@
+De los resultados anteriores puede apreciarse que el intercepto, y las variables x2 (número de cuarto de baño) y x3 (número de dormitorios) no parecen influir en la estimación del precio de la vivienda por lo podrían descartarse de la ecuación.\\
+\\
+Una forma alternativa y mucho más eficiente para seleccionar el mejor conjunto de variables independientes es utilizar la instrucción step(), con la cual se utilizan los algoritmos conocidos para seleccionar variables (selección hacia adelante -“forward”-, hacia atrás -“backward”- o selección por pasos -“both”-).
+<<>>=
+step(modelo1, direction="both")
+@
+
+\end{document}
